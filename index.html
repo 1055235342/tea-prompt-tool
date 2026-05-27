@@ -671,10 +671,10 @@
         mood: "东方雅致，文人茶意，宁静温润，高级东方品牌感，春日清新，茶文化仪式感",
         score: ["A", "商业主视觉，适合品牌海报和电商KV。"]
       },
-      biluochun: {
-        label: "碧螺春茶叶知识图鉴 / 科普信息图",
-        intro: "碧螺春茶叶知识图谱，茶文化百科插画海报，复古植物学图鉴风格",
-        core: "画面围绕碧螺春茶叶展开，以卷曲成螺的干茶为中心，通过放大镜强调银绿隐翠、白毫显露、卷曲形态。",
+      infographic: {
+        label: "茶叶知识图鉴 / 科普信息图",
+        intro: "茶叶知识图谱，茶文化百科插画海报，复古植物学图鉴风格",
+        core: "画面围绕所选茶叶展开，以干茶、茶汤和茶树结构为中心，通过放大镜强调茶叶形态、色泽、毫毛或条索等核心特征。",
         elements: {
           plant: "茶树植物结构、茶芽、白毫、山间植被",
           scene: "旧纸背景、产地区域图、山水剖面、手绘边框",
@@ -687,10 +687,10 @@
         mood: "安静自然，博物学气息，茶文化知识感，东方草本美学，学术图鉴感",
         score: ["B", "百科图鉴，适合科普海报和知识内容。"]
       },
-      blacktea: {
-        label: "祁门红茶知识图鉴 / 红茶百科海报",
-        intro: "祁门红茶知识图谱，东方茶文化百科插画海报，红茶工艺解析图",
-        core: "画面围绕祁门红茶展开，以青花瓷盖碗中的琥珀红茶汤和条索紧细的红茶干茶为中心，展示金毫、汤色、香气和全发酵工艺。",
+      processDiagram: {
+        label: "茶叶工艺解析图 / 风味百科海报",
+        intro: "茶叶工艺解析图，东方茶文化百科插画海报，茶汤风味信息图",
+        core: "画面围绕所选茶叶展开，以茶汤、干茶和工艺流程为中心，展示外形特征、汤色、香气、风味结构、产地风土和制作工艺。",
         elements: {
           plant: "茶树、鲜叶、金毫、墨绿色叶片、山地植被",
           scene: "泛黄旧纸、山地风土地貌、复古边框、产地剖面图",
@@ -1278,11 +1278,13 @@
       const light = presetValue("lightPreset", lightPresets, type.light);
       const palette = presetValue("palettePreset", palettePresets, tea.palette);
       const mood = presetValue("moodPreset", moodPresets, type.mood);
+      const intro = `${tea.label}${type.intro}`;
+      const coreWithTea = core.replaceAll("所选茶叶", tea.label).replaceAll("茶叶品类", tea.label);
 
-      return `${type.intro}，${tea.label}主题，${scene}，低饱和东方美学。
+      return `${intro}，${scene}，低饱和东方美学。
 
 核心画面：
-${core}
+${coreWithTea}
 
 主体对象：
 ${product}
