@@ -1,6 +1,6 @@
 # 部署说明
 
-这个项目是纯静态网站，只需要托管 `index.html` 即可，不需要服务器。
+这个项目是纯静态网站，只需要托管根目录文件即可，不需要服务器。
 
 ## 推荐方案：GitHub + Cloudflare Pages
 
@@ -20,6 +20,7 @@ tea-prompt-generator
 
 ```text
 index.html
+prompt-generator.html
 README.md
 CHANGELOG.md
 DEPLOY.md
@@ -101,4 +102,3 @@ https://你的用户名.github.io/仓库名/
 等待 Cloudflare Pages / Vercel 自动部署
 打开线上地址确认
 ```
-

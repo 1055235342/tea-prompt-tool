@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>茶叶文生图提示词生成工具</title>
+  <title>茶叶 AI 工具导航</title>
   <style>
     :root {
       --bg: #f6f0e5;
@@ -13,58 +13,54 @@
       --line: #d8cbb5;
       --green: #4c7a58;
       --green-2: #9bb783;
-      --mist: #e7ead9;
       --amber: #bd8337;
-      --red: #9e513d;
-      --blue: #5e8985;
       --dark: #17231c;
-      --white: #ffffff;
-      --shadow: 0 18px 50px rgba(40, 49, 36, 0.10);
+      --white: #fffaf0;
+      --shadow: 0 18px 50px rgba(40, 49, 36, 0.11);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
-      background:
-        radial-gradient(circle at 8% 12%, rgba(155, 183, 131, 0.20), transparent 26%),
-        linear-gradient(120deg, #f8f2e7 0%, #f2eadc 55%, #edf1e3 100%);
+      min-height: 100vh;
       color: var(--ink);
       font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
       letter-spacing: 0;
+      background:
+        radial-gradient(circle at 12% 14%, rgba(155, 183, 131, 0.24), transparent 26%),
+        radial-gradient(circle at 82% 20%, rgba(189, 131, 55, 0.12), transparent 24%),
+        linear-gradient(120deg, #f8f2e7 0%, #f2eadc 58%, #edf1e3 100%);
     }
 
-    button, input, select, textarea {
-      font: inherit;
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
-    .app {
+    .page {
       min-height: 100vh;
       display: grid;
-      grid-template-columns: 390px minmax(0, 1fr);
-      gap: 0;
+      grid-template-rows: auto 1fr auto;
     }
 
-    aside {
-      border-right: 1px solid var(--line);
-      background: rgba(255, 250, 240, 0.82);
+    header {
+      padding: 28px clamp(22px, 5vw, 72px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      border-bottom: 1px solid rgba(216, 203, 181, 0.72);
+      background: rgba(255, 250, 240, 0.62);
       backdrop-filter: blur(18px);
-      padding: 26px 24px 28px;
-      overflow: auto;
-      max-height: 100vh;
-    }
-
-    main {
-      padding: 30px;
-      overflow: auto;
-      max-height: 100vh;
     }
 
     .brand {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 22px;
     }
 
     .leaf-mark {
@@ -77,7 +73,7 @@
     .leaf-mark::before {
       content: "";
       position: absolute;
-      inset: 8px 2px 10px 2px;
+      inset: 8px 2px 10px;
       border-radius: 50% 0 50% 0;
       background: var(--green);
       transform: rotate(-18deg);
@@ -94,146 +90,37 @@
       transform: rotate(-18deg);
     }
 
-    h1 {
+    .brand h1 {
       margin: 0;
-      font-size: 24px;
+      font-size: 22px;
       line-height: 1.15;
     }
 
-    .tagline {
+    .brand p {
       margin: 4px 0 0;
       color: var(--muted);
       font-size: 13px;
     }
 
-    details.section {
-      border-top: 1px solid rgba(216, 203, 181, 0.72);
-      padding: 0;
-    }
-
-    details.section:first-of-type {
-      border-top: 0;
-    }
-
-    details.section > summary {
-      list-style: none;
-      cursor: pointer;
-      padding: 16px 0 12px;
-    }
-
-    details.section > summary::-webkit-details-marker {
-      display: none;
-    }
-
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
+    .status {
       color: var(--green);
-      font-weight: 700;
+      font-size: 13px;
+      font-weight: 750;
+      padding: 8px 12px;
+      border: 1px solid rgba(76, 122, 88, 0.28);
+      background: rgba(255, 250, 240, 0.72);
+      border-radius: 999px;
+      white-space: nowrap;
     }
 
-    .section-title::after {
-      content: "+";
-      width: 22px;
-      height: 22px;
+    main {
+      width: min(1160px, calc(100% - 44px));
+      margin: 0 auto;
+      padding: clamp(42px, 7vw, 78px) 0 48px;
       display: grid;
-      place-items: center;
-      border: 1px solid var(--line);
-      border-radius: 50%;
-      color: var(--muted);
-      margin-left: auto;
-    }
-
-    details[open] .section-title::after {
-      content: "-";
-      background: var(--green);
-      border-color: var(--green);
-      color: white;
-    }
-
-    .section-body {
-      padding: 0 0 18px;
-    }
-
-    .field {
-      display: grid;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    label {
-      color: var(--ink);
-      font-size: 14px;
-      font-weight: 650;
-    }
-
-    select, input, textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.68);
-      color: var(--ink);
-      border-radius: 8px;
-      padding: 11px 12px;
-      outline: none;
-    }
-
-    select:focus, input:focus, textarea:focus {
-      border-color: var(--green);
-      box-shadow: 0 0 0 3px rgba(76, 122, 88, 0.14);
-    }
-
-    textarea {
-      min-height: 78px;
-      resize: vertical;
-      line-height: 1.55;
-    }
-
-    .compact-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .segmented {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .segmented button {
-      border: 1px solid var(--line);
-      background: rgba(255,255,255,.55);
-      color: var(--ink);
-      border-radius: 8px;
-      padding: 10px;
-      cursor: pointer;
-    }
-
-    .segmented button.active {
-      background: var(--green);
-      color: white;
-      border-color: var(--green);
-    }
-
-    .workspace {
-      display: grid;
-      grid-template-rows: auto minmax(360px, 1fr);
-      gap: 20px;
-      min-height: calc(100vh - 60px);
-    }
-
-    .topbar {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 18px;
-      padding: 22px 24px;
-      background: rgba(255,250,240,.72);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      border-radius: 8px;
+      grid-template-columns: minmax(0, 0.92fr) minmax(320px, 1fr);
+      gap: clamp(28px, 5vw, 72px);
+      align-items: center;
     }
 
     .kicker {
@@ -241,1201 +128,256 @@
       align-items: center;
       gap: 10px;
       color: var(--green);
-      font-weight: 800;
+      font-weight: 850;
       font-size: 12px;
-      margin-bottom: 8px;
+      margin-bottom: 18px;
     }
 
     .kicker::before {
       content: "";
-      width: 28px;
+      width: 34px;
       height: 2px;
       background: var(--green);
-      display: inline-block;
     }
 
-    .headline {
+    .hero h2 {
       margin: 0;
-      font-size: 32px;
-      line-height: 1.18;
+      font-size: clamp(38px, 6vw, 70px);
+      line-height: 1.05;
+      max-width: 660px;
     }
 
-    .summary {
-      margin: 8px 0 0;
+    .hero p {
+      margin: 22px 0 0;
+      max-width: 620px;
       color: var(--muted);
-      font-size: 15px;
-      max-width: 720px;
-      line-height: 1.65;
+      font-size: 18px;
+      line-height: 1.75;
     }
 
     .actions {
       display: flex;
-      gap: 10px;
       flex-wrap: wrap;
-      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 34px;
     }
 
-    .primary-btn, .ghost-btn {
-      border: 0;
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 12px 18px;
       border-radius: 8px;
-      padding: 11px 16px;
-      cursor: pointer;
-      font-weight: 750;
+      font-weight: 800;
+      border: 1px solid var(--line);
+    }
+
+    .btn.primary {
+      background: var(--dark);
+      color: #fff4dc;
+      border-color: var(--dark);
+    }
+
+    .btn.secondary {
+      background: rgba(255, 250, 240, 0.68);
+      color: var(--ink);
+    }
+
+    .tool-card {
+      position: relative;
+      background: rgba(255, 250, 240, 0.82);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      overflow: hidden;
+    }
+
+    .tool-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(76, 122, 88, 0.08), transparent 35%),
+        linear-gradient(180deg, transparent, rgba(189, 131, 55, 0.08));
+      pointer-events: none;
+    }
+
+    .tool-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(216, 203, 181, 0.72);
+    }
+
+    .tool-card h3 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.18;
+    }
+
+    .badge {
+      color: var(--white);
+      background: var(--green);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 800;
       white-space: nowrap;
     }
 
-    .primary-btn {
-      background: var(--dark);
-      color: #fff4dc;
+    .tool-card p {
+      margin: 18px 0 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 15px;
     }
 
-    .ghost-btn {
-      background: rgba(255, 255, 255, 0.58);
-      color: var(--ink);
-      border: 1px solid var(--line);
-    }
-
-    .output-grid {
+    .feature-grid {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 300px;
-      gap: 20px;
-      min-height: 0;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 24px;
     }
 
-    .prompt-wrap {
-      background: rgba(255,250,240,.84);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
+    .feature {
+      padding: 14px;
+      background: rgba(255, 255, 255, 0.45);
+      border: 1px solid rgba(216, 203, 181, 0.72);
       border-radius: 8px;
-      padding: 22px;
-      display: grid;
-      grid-template-rows: auto minmax(0, 1fr);
-      gap: 14px;
-      min-height: 0;
+      min-height: 86px;
     }
 
-    .prompt-head {
+    .feature strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+
+    .feature span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .card-link {
+      margin-top: 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 14px;
-    }
-
-    .prompt-head h2 {
-      margin: 0;
-      font-size: 21px;
-    }
-
-    .counter {
-      color: var(--muted);
-      font-size: 13px;
-      white-space: nowrap;
-    }
-
-    #promptOutput {
-      width: 100%;
-      min-height: 520px;
-      height: 100%;
-      border-radius: 8px;
-      background: #fffdf7;
-      border: 1px solid #e0d4bd;
-      line-height: 1.72;
-      padding: 20px;
-      font-size: 15px;
-      color: #203129;
-      resize: none;
-    }
-
-    .side {
-      display: grid;
-      gap: 18px;
-      align-content: start;
-    }
-
-    .module {
-      background: rgba(255,250,240,.78);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 18px;
-      box-shadow: 0 12px 34px rgba(40,49,36,.07);
-    }
-
-    .module h3 {
-      margin: 0 0 12px;
-      font-size: 17px;
-    }
-
-    .stack {
-      display: grid;
-      gap: 10px;
-    }
-
-    .metric {
-      display: grid;
-      grid-template-columns: 34px 1fr;
-      gap: 10px;
-      align-items: start;
-    }
-
-    .metric b {
-      width: 34px;
-      height: 28px;
-      display: grid;
-      place-items: center;
-      background: var(--green);
-      color: white;
-      font-size: 13px;
-      border-radius: 4px;
-    }
-
-    .metric span {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.45;
-      padding-top: 2px;
-    }
-
-    .swatches {
-      display: flex;
-      gap: 7px;
-      margin-top: 10px;
-    }
-
-    .swatch {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: 1px solid rgba(31, 48, 39, 0.12);
-    }
-
-    .toast {
-      position: fixed;
-      right: 28px;
-      bottom: 28px;
-      padding: 12px 16px;
+      padding: 15px 16px;
       background: var(--dark);
       color: #fff4dc;
       border-radius: 8px;
-      opacity: 0;
-      transform: translateY(12px);
-      pointer-events: none;
-      transition: .22s ease;
-      box-shadow: var(--shadow);
+      font-weight: 850;
     }
 
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
+    .arrow {
+      font-size: 20px;
+      line-height: 1;
     }
 
-    @media (max-width: 980px) {
-      .app {
-        grid-template-columns: 1fr;
-      }
+    footer {
+      padding: 22px clamp(22px, 5vw, 72px);
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid rgba(216, 203, 181, 0.72);
+      background: rgba(255, 250, 240, 0.48);
+    }
 
-      aside, main {
-        max-height: none;
-      }
-
-      .output-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .topbar {
+    @media (max-width: 880px) {
+      header {
+        align-items: flex-start;
         flex-direction: column;
       }
 
-      .actions {
-        justify-content: flex-start;
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h2 {
+        max-width: none;
       }
     }
 
-    @media (max-width: 620px) {
-      aside, main { padding: 18px; }
-      .headline { font-size: 26px; }
-      .segmented { grid-template-columns: 1fr; }
-      .compact-row { grid-template-columns: 1fr; }
-      #promptOutput { min-height: 440px; }
+    @media (max-width: 560px) {
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card-top {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <aside>
+  <div class="page">
+    <header>
       <div class="brand">
         <div class="leaf-mark" aria-hidden="true"></div>
         <div>
-          <h1>茶叶提示词生成器</h1>
-          <p class="tagline">东方茶文化 · 商业KV · 茶空间 · 包装礼盒 · 知识图鉴</p>
+          <h1>茶叶 AI 工具导航</h1>
+          <p>Prompt tools for tea visuals</p>
         </div>
       </div>
-
-      <details class="section" open>
-        <summary><div class="section-title"><span>基础设定</span><span>01</span></div></summary>
-        <div class="section-body">
-          <div class="field">
-            <label for="visualType">图片类型</label>
-            <select id="visualType"></select>
-          </div>
-          <div class="field">
-            <label for="teaType">茶叶品类</label>
-            <select id="teaType"></select>
-          </div>
-          <div class="field">
-            <label for="format">画幅</label>
-            <div class="segmented" id="format">
-              <button type="button" data-value="竖版海报，适合小红书、广告KV、电商主视觉" class="active">竖版海报</button>
-              <button type="button" data-value="横版画面，适合课程封面、PPT视觉页、网页首屏">横版画面</button>
-            </div>
-          </div>
-        </div>
-      </details>
-
-      <details class="section">
-        <summary><div class="section-title"><span>画面内容</span><span>02</span></div></summary>
-        <div class="section-body">
-          <div class="field">
-            <label for="corePreset">核心画面</label>
-            <select id="corePreset"></select>
-          </div>
-          <div class="field">
-            <label for="scene">场景 / 产地</label>
-            <input id="scene" placeholder="如：杭州西湖春日、苏州洞庭山、安徽祁门山地">
-          </div>
-          <div class="field">
-            <label for="product">主体产品 / 主体对象</label>
-            <input id="product" placeholder="如：淡青绿色茶叶罐、卷曲干茶、青花瓷盖碗">
-          </div>
-          <div class="field">
-            <label for="extraElements">画面包含</label>
-            <textarea id="extraElements" placeholder="如：雷峰塔、曲桥、采茶人物、风味雷达图、制茶流程"></textarea>
-          </div>
-        </div>
-      </details>
-
-      <details class="section">
-        <summary><div class="section-title"><span>元素控制</span><span>03</span></div></summary>
-        <div class="section-body">
-          <div class="field">
-            <label for="plantPreset">植物元素</label>
-            <select id="plantPreset"></select>
-          </div>
-          <div class="field">
-            <label for="scenePreset">场景元素</label>
-            <select id="scenePreset"></select>
-          </div>
-          <div class="field">
-            <label for="peoplePreset">人物元素</label>
-            <select id="peoplePreset"></select>
-          </div>
-          <div class="field">
-            <label for="objectPreset">茶具与信息元素</label>
-            <select id="objectPreset"></select>
-          </div>
-        </div>
-      </details>
-
-      <details class="section" open>
-        <summary><div class="section-title"><span>构图空间</span><span>04</span></div></summary>
-        <div class="section-body">
-          <div class="field">
-            <label for="compositionSelect">构图方式</label>
-            <select id="compositionSelect"></select>
-          </div>
-          <div class="field">
-            <label for="spacePreset">画面结构</label>
-            <select id="spacePreset"></select>
-          </div>
-        </div>
-      </details>
-
-      <details class="section">
-        <summary><div class="section-title"><span>风格控制</span><span>05</span></div></summary>
-        <div class="section-body">
-          <div class="field">
-            <label for="styleSelect">风格质感</label>
-            <select id="styleSelect"></select>
-          </div>
-          <div class="field">
-            <label for="texturePreset">材质表现</label>
-            <select id="texturePreset"></select>
-          </div>
-          <div class="field">
-            <label for="lightPreset">光影</label>
-            <select id="lightPreset"></select>
-          </div>
-          <div class="compact-row">
-            <div class="field">
-              <label for="palettePreset">主色系</label>
-              <select id="palettePreset"></select>
-            </div>
-            <div class="field">
-              <label for="moodPreset">氛围</label>
-              <select id="moodPreset"></select>
-            </div>
-          </div>
-        </div>
-      </details>
-
-      <details class="section">
-        <summary><div class="section-title"><span>质量约束</span><span>06</span></div></summary>
-        <div class="section-body">
-          <div class="field">
-            <label for="detailLevel">细节强度</label>
-            <select id="detailLevel">
-              <option value="克制干净，留白充足，细节精致但不拥挤">克制干净</option>
-              <option value="层次丰富，细节充足，商业广告级精度">层次丰富</option>
-              <option value="超精细细节，8K，印刷级细节，复杂但有序">超精细</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="negativeMode">负面词</label>
-            <select id="negativeMode">
-              <option value="balanced">通用 + 类型约束</option>
-              <option value="strict">严格商业级约束</option>
-              <option value="minimal">简洁约束</option>
-            </select>
-          </div>
-        </div>
-      </details>
-    </aside>
+      <div class="status">静态部署 · 可持续维护</div>
+    </header>
 
     <main>
-      <div class="workspace">
-        <div class="topbar">
-          <div>
-            <div class="kicker">TEA PROMPT BUILDER</div>
-            <h2 class="headline">把茶叶视觉拆成可复制的完整提示词</h2>
-            <p class="summary">根据你提供的提示词结构，工具会自动组合图片类型、茶名、主画面、元素、构图、画面结构、风格、材质、光影、色彩、氛围、质量词和负面词。</p>
+      <section class="hero">
+        <div class="kicker">TEA VISUAL TOOLKIT</div>
+        <h2>把茶叶视觉创意变成可复制的提示词</h2>
+        <p>这里是工具入口页。当前已上线茶叶文生图提示词生成器，适合商业 KV、产品摄影、礼盒包装、茶空间、知识图鉴、水墨意境和节气插画等方向。</p>
+        <div class="actions">
+          <a class="btn primary" href="./prompt-generator.html">进入提示词生成器</a>
+          <a class="btn secondary" href="https://github.com/1055235342/tea-prompt-tool" target="_blank" rel="noreferrer">查看 GitHub</a>
+        </div>
+      </section>
+
+      <section class="tool-card" aria-label="茶叶文生图提示词生成器">
+        <div class="card-top">
+          <h3>茶叶文生图提示词生成器</h3>
+          <span class="badge">已上线</span>
+        </div>
+        <p>选择图片类型、茶叶品类、构图、画面结构、材质、光影、色彩、氛围和负面词，自动生成完整提示词并一键复制。</p>
+        <div class="feature-grid">
+          <div class="feature">
+            <strong>12 类图片类型</strong>
+            <span>商业 KV、知识图鉴、产品摄影、礼盒包装、茶空间等。</span>
           </div>
-          <div class="actions">
-            <button class="ghost-btn" id="resetBtn" type="button">重置</button>
-            <button class="primary-btn" id="copyBtn" type="button">复制提示词</button>
+          <div class="feature">
+            <strong>29 个茶叶品类</strong>
+            <span>覆盖绿茶、红茶、乌龙、白茶、黄茶、黑茶、花茶。</span>
+          </div>
+          <div class="feature">
+            <strong>独立结构控制</strong>
+            <span>核心画面、元素、构图、画面结构、风格可单独变更。</span>
+          </div>
+          <div class="feature">
+            <strong>可复制输出</strong>
+            <span>生成完整提示词，可直接用于文生图工具。</span>
           </div>
         </div>
-
-        <div class="output-grid">
-          <section class="prompt-wrap">
-            <div class="prompt-head">
-              <h2>生成结果</h2>
-              <div class="counter" id="counter">0 字</div>
-            </div>
-            <textarea id="promptOutput" spellcheck="false"></textarea>
-          </section>
-
-          <section class="side">
-            <div class="module">
-              <h3>生成结构</h3>
-              <div class="stack">
-                <div class="metric"><b>1</b><span>先确定商业KV、产品摄影、礼盒包装、知识图鉴、水墨意境或茶空间。</span></div>
-                <div class="metric"><b>2</b><span>再选择具体茶名，覆盖绿茶、红茶、乌龙、白茶、黄茶、黑茶、花茶。</span></div>
-                <div class="metric"><b>3</b><span>最后加入构图、画面结构、材质、光影、色彩和负面词。</span></div>
-              </div>
-            </div>
-
-            <div class="module">
-              <h3>当前色彩</h3>
-              <div id="paletteName" class="tagline">龙井浅绿体系</div>
-              <div class="swatches" id="swatches"></div>
-            </div>
-
-            <div class="module">
-              <h3>提示词强度</h3>
-              <div class="stack">
-                <div class="metric"><b id="scoreType">A</b><span id="scoreText">商业主视觉，适合品牌海报和电商KV。</span></div>
-              </div>
-            </div>
-          </section>
-        </div>
-      </div>
+        <a class="card-link" href="./prompt-generator.html">
+          <span>打开工具</span>
+          <span class="arrow">→</span>
+        </a>
+      </section>
     </main>
+
+    <footer>
+      后续新增工具时，可以继续在这个导航页添加入口。
+    </footer>
   </div>
-
-  <div class="toast" id="toast">已复制到剪贴板</div>
-
-  <script>
-    const visualTypes = {
-      commercial: {
-        label: "新中式茶叶商业海报 / 品牌KV",
-        intro: "新中式东方茶文化商业海报，高端茶叶品牌KV，高级电商主视觉",
-        core: "画面以茶叶产品为主体，结合产地山水、茶园、东方建筑、茶具与植物，形成高级东方品牌主视觉。",
-        elements: {
-          plant: "茶树、柳树、白色花枝、竹林、山间植被",
-          scene: "湖面、茶山梯田、远山薄雾、江南园林、白墙灰瓦建筑",
-          people: "采茶人物、游船人物、园林行人",
-          object: "茶叶罐、透明玻璃茶杯、舒展茶叶、白瓷盖碗、竹编茶盘"
-        },
-        style: "国风新中式，东方美学海报，纸雕层叠插画，浅浮雕视觉，微缩景观建模，高级商业广告质感",
-        texture: "手工纸雕层叠质感，压纹纸张肌理，丝绸般柔和反光，陶瓷与纸面融合触感，高级印刷质感",
-        light: "柔和漫射光，春日上午柔光，低对比空气感，薄雾氛围，空气透视，浅浮雕阴影",
-        mood: "东方雅致，文人茶意，宁静温润，高级东方品牌感，春日清新，茶文化仪式感",
-        score: ["A", "商业主视觉，适合品牌海报和电商KV。"]
-      },
-      infographic: {
-        label: "茶叶知识图鉴 / 科普信息图",
-        intro: "茶叶知识图谱，茶文化百科插画海报，复古植物学图鉴风格",
-        core: "画面围绕所选茶叶展开，以干茶、茶汤和茶树结构为中心，通过放大镜强调茶叶形态、色泽、毫毛或条索等核心特征。",
-        elements: {
-          plant: "茶树植物结构、茶芽、白毫、山间植被",
-          scene: "旧纸背景、产地区域图、山水剖面、手绘边框",
-          people: "手工揉捻动作、采茶人物、制茶工艺人物",
-          object: "放大镜、干茶、茶汤玻璃杯、风味雷达图、制茶流程、冲泡参数"
-        },
-        style: "复古植物学插画，茶叶百科图鉴，东方自然科学手绘，轻复古纸张风，手绘线稿上色，博物学插画风格",
-        texture: "泛黄旧纸纹理，钢笔线稿质感，手绘水彩渲染，复古印刷感，博物馆图谱感",
-        light: "平面柔光，无明显光源，低对比自然光，手绘阴影，水彩叠色层次",
-        mood: "安静自然，博物学气息，茶文化知识感，东方草本美学，学术图鉴感",
-        score: ["B", "百科图鉴，适合科普海报和知识内容。"]
-      },
-      processDiagram: {
-        label: "茶叶工艺解析图 / 风味百科海报",
-        intro: "茶叶工艺解析图，东方茶文化百科插画海报，茶汤风味信息图",
-        core: "画面围绕所选茶叶展开，以茶汤、干茶和工艺流程为中心，展示外形特征、汤色、香气、风味结构、产地风土和制作工艺。",
-        elements: {
-          plant: "茶树、鲜叶、金毫、墨绿色叶片、山地植被",
-          scene: "泛黄旧纸、山地风土地貌、复古边框、产地剖面图",
-          people: "制茶匠人、采茶人物、发酵工艺示意人物",
-          object: "青花瓷盖碗、红茶干茶、放大镜、风味雷达图、香气图标、温度计"
-        },
-        style: "红茶百科信息图，复古植物学插画，自然科学手绘风，东方茶文化图鉴，欧式自然图谱风格",
-        texture: "泛黄旧纸纹理，手绘水彩触感，钢笔线稿质感，复古印刷感，手工百科插图风格",
-        light: "平面柔光，低对比自然光，手绘阴影，水彩叠色，纸张纹理层次",
-        mood: "温暖沉静，东方古典感，匠人工艺感，博物学气息，红茶暖色调",
-        score: ["B", "红茶百科，适合工艺解析和风味展示。"]
-      },
-      ink: {
-        label: "东方水墨茶文化意境海报",
-        intro: "东方水墨茶文化概念海报，新中式极简插画，茶汤化山水",
-        core: "一只绿色茶壶倾倒茶汤，流淌出的茶水逐渐演化为山峦、河流、瀑布、亭台、茶山和小路，形成茶即山水的东方意境。",
-        elements: {
-          plant: "茶山、草地、竹林、山间树木、水墨植被",
-          scene: "山峦、河流、瀑布、茶亭、远山雾气、宣纸留白",
-          people: "背竹篓茶人、山间行人、东方隐逸人物",
-          object: "绿色茶壶、茶汤、水墨山体、茶绿色水流"
-        },
-        style: "东方水墨风，新中式极简海报，水彩晕染插画，国风留白设计，文人山水视觉，禅意茶文化艺术海报",
-        texture: "宣纸肌理，水墨晕染感，水彩扩散边缘，柔和颗粒感，手绘笔触，空气雾化感",
-        light: "柔和漫射光，无明显光源，水彩晕染式光影，留白过渡，边缘虚化",
-        mood: "空灵，宁静，禅意，东方诗意，文人气质，山水意境，茶道哲学感",
-        score: ["C", "概念意境，适合品牌调性和艺术海报。"]
-      },
-      leafworld: {
-        label: "茶叶山水微缩景观 / 一叶一世界",
-        intro: "东方极简概念插画，茶叶山水意境海报，新中式微缩景观视觉",
-        core: "一片巨大的绿色茶叶化作微缩山水世界，叶脉转化为山谷、河流和山路，叶片内部包含山峦、村落、古建筑、树木和行旅人物。",
-        elements: {
-          plant: "巨大茶叶、叶脉纹理、茶山、树木、山间植被",
-          scene: "山峦、山路、村落、东方古建筑、山间寺院、雾化远山",
-          people: "骑马行旅人物、古道行人、文人旅途人物",
-          object: "茶叶造景、微缩景观、叶中山河、山谷纹理"
-        },
-        style: "新中式极简插画，东方概念艺术，微缩景观风格，纸雕式层叠视觉，东方自然主义，禅意艺术海报",
-        texture: "微缩景观模型质感，纸雕层叠感，茶叶肌理纹路，柔和空气感，精细微景观细节",
-        light: "柔和漫射光，低对比柔光，空气雾化感，微缩景观光影，山体渐变与空气透视",
-        mood: "宁静，禅意，空灵，山野感，东方哲学感，文人气质，微缩奇境感",
-        score: ["C", "概念艺术，适合高级创意视觉。"]
-      },
-      productPhoto: {
-        label: "高端产品摄影 / 茶叶电商主图",
-        intro: "高端茶叶产品摄影，现代东方电商主图，精致商业静物摄影",
-        core: "画面以茶叶产品、干茶、茶汤和茶具组成高级静物场景，突出包装质感、茶汤通透度和茶叶细节，形成干净克制的商业产品画面。",
-        elements: {
-          plant: "少量茶枝、茶芽、竹叶、季节花枝、自然植物点缀",
-          scene: "浅色影棚台面、东方茶席、木质桌面、柔和背景、干净留白",
-          people: "可加入手部冲泡动作、奉茶动作、茶席布置动作",
-          object: "茶叶罐、茶盒、干茶堆、茶汤杯、盖碗、公道杯、茶匙、包装纸"
-        },
-        style: "高级商业摄影，茶叶电商主图，现代新中式静物，真实材质表现，克制高级感",
-        texture: "陶瓷釉面、玻璃透明质感、纸盒压纹、金属烫金、木纹桌面、茶叶干燥卷曲纹理",
-        light: "柔和摄影棚漫射光，低反差阴影，真实高光，干净背景光，产品边缘清晰",
-        mood: "高级、干净、可信、精致、东方礼品感、现代茶生活",
-        score: ["A", "产品摄影，适合电商主图和包装展示。"]
-      },
-      giftBox: {
-        label: "茶叶礼盒包装 / 节日赠礼海报",
-        intro: "高端茶叶礼盒包装海报，东方节日赠礼视觉，新中式品牌礼盒KV",
-        core: "画面以茶叶礼盒和包装展开为主体，结合节令植物、印章、纸张纹理和茶席道具，突出礼赠、收藏和品牌高级感。",
-        elements: {
-          plant: "松枝、竹叶、梅花、桂花、茶枝、白色花枝、节令植物",
-          scene: "东方礼盒陈列台、节日茶席、浅色背景、山水纹样、印章装饰",
-          people: "可加入递礼手势、茶席主人、节日访客剪影",
-          object: "礼盒、茶罐、封套、丝带、印章、茶杯、盖碗、茶匙、烫金标签"
-        },
-        style: "新中式礼盒海报，高端包装设计，东方节日视觉，精品礼赠商业广告",
-        texture: "特种纸纹理、烫金工艺、压纹纸张、丝带反光、陶瓷釉面、细腻包装边缘",
-        light: "柔和暖光，低对比商业布光，局部烫金高光，细腻投影",
-        mood: "礼赠感，节日仪式感，东方雅致，温润高级，品牌收藏感",
-        score: ["A", "礼盒包装，适合节日海报和品牌赠礼。"]
-      },
-      lifestyle: {
-        label: "茶空间生活方式 / 新中式室内场景",
-        intro: "新中式茶空间生活方式海报，东方茶席室内场景，现代茶生活视觉",
-        core: "画面呈现一个安静的东方茶空间，茶桌、窗景、茶具、植物和人物动作共同营造真实可进入的茶生活场景。",
-        elements: {
-          plant: "盆景、竹影、茶枝、插花、窗外树影、庭院植物",
-          scene: "茶室、木质茶桌、格栅窗、庭院、屏风、书架、山水挂画",
-          people: "泡茶人物、品茶人物、茶席主人、安静交谈的访客",
-          object: "茶盘、紫砂壶、盖碗、茶杯、公道杯、茶巾、香炉、茶叶罐"
-        },
-        style: "新中式室内设计，生活方式摄影感，东方茶席美学，杂志大片构图",
-        texture: "木纹、陶瓷、亚麻、宣纸、竹编、玻璃、温润自然材质",
-        light: "窗边自然光，柔和侧逆光，空气感，室内低对比阴影，晨昏茶室氛围",
-        mood: "安静、温润、松弛、文人气质、现代东方生活、茶席仪式感",
-        score: ["A", "生活方式，适合茶空间、茶馆和品牌场景。"]
-      },
-      songTea: {
-        label: "宋式点茶 / 古典茶席海报",
-        intro: "宋式点茶文化海报，古典东方茶席，宋韵美学视觉",
-        core: "画面围绕宋式点茶展开，茶筅、建盏、茶粉、茶汤泡沫和古典案几构成主体，呈现古代文人茶事与宋韵审美。",
-        elements: {
-          plant: "梅枝、竹影、松枝、茶树枝、淡雅插花",
-          scene: "宋式书房、屏风、案几、卷轴、窗棂、山水庭院",
-          people: "点茶人物、文人雅士、执盏人物、侍茶人物",
-          object: "建盏、茶筅、茶粉、茶勺、茶碗、卷轴、古籍、香炉"
-        },
-        style: "宋代美学，古典东方绘画，文人茶席，工笔淡彩，古画质感",
-        texture: "绢本纹理、宣纸肌理、陶盏黑釉、茶沫细腻泡沫、古籍纸张",
-        light: "柔和室内天光，古画式低对比光影，淡雅空气感",
-        mood: "古雅、清寂、文人气、仪式感、宋韵、含蓄高级",
-        score: ["B", "古典茶席，适合宋式点茶与文化海报。"]
-      },
-      vintagePage: {
-        label: "复古书页 / 茶叶档案卡",
-        intro: "复古茶叶档案卡，旧书页百科设计，博物馆藏品说明视觉",
-        core: "画面像一页旧书中的茶叶档案，包含茶叶标本、产地地图、编号标签、手写注释、风味描述和制茶工艺小图。",
-        elements: {
-          plant: "压制茶叶标本、茶树枝、茶花、茶芽结构、植物切片",
-          scene: "旧书页、牛皮纸、档案夹、手写标签、产地地图、复古边框",
-          people: "少量手绘采茶人物或制茶人物小插图",
-          object: "标本贴纸、放大镜、墨水笔、邮票、编号章、茶汤色卡、风味卡"
-        },
-        style: "复古档案卡，博物馆标本页，自然科学手稿，手写笔记风，旧书排版",
-        texture: "泛黄纸张、折痕、水痕、钢笔线稿、胶带贴纸、旧印刷颗粒",
-        light: "平面柔光，旧纸纹理光感，低对比阴影，手稿扫描质感",
-        mood: "学术、怀旧、自然、收藏感、知识感、手作感",
-        score: ["B", "复古档案，适合茶叶百科和内容封面。"]
-      },
-      threeD: {
-        label: "3D微缩茶山 / 纸艺立体场景",
-        intro: "3D微缩茶山视觉，纸艺立体茶文化场景，高级模型感海报",
-        core: "画面构建一个微缩茶山模型，层叠山体、茶园梯田、茶具和茶叶产品融合在同一个精致立体空间中。",
-        elements: {
-          plant: "茶树阵列、微缩茶园、竹林、山间植被、白色花枝",
-          scene: "层叠茶山、云雾、亭台、曲桥、微缩村落、纸艺山水",
-          people: "采茶小人、游山人物、茶席人物、微缩行旅人物",
-          object: "茶罐、茶杯、盖碗、茶叶堆、茶盘、包装盒、微缩道具"
-        },
-        style: "3D微缩景观，纸艺立体插画，浅浮雕商业视觉，东方茶山模型",
-        texture: "磨砂纸艺、细腻模型材质、陶瓷、透明玻璃、柔和塑形阴影",
-        light: "柔和全局光，浅景深，微缩模型光影，空气透视，低对比阴影",
-        mood: "精致、奇境、东方、可爱但高级、商业展示感",
-        score: ["A", "3D微缩，适合高端品牌KV和创意主图。"]
-      },
-      seasonal: {
-        label: "节气茶海报 / 东方插画",
-        intro: "中国节气茶文化海报，东方季节插画，新中式自然美学",
-        core: "画面把茶叶与节气物候结合，通过季节植物、天气、茶席和产地场景表现不同节令的饮茶意境。",
-        elements: {
-          plant: "春芽、荷叶、桂花、菊花、梅枝、竹叶、松枝、节气植物",
-          scene: "春雨茶山、夏日庭院、秋日桂香、冬日围炉、山水云雾",
-          people: "采茶人物、庭院品茶人物、围炉煮茶人物、节气行人",
-          object: "茶壶、茶杯、盖碗、茶点、围炉、花枝、节气题签"
-        },
-        style: "东方节气插画，新中式自然海报，水彩淡彩，国风留白，文旅视觉",
-        texture: "宣纸、水彩、淡彩颗粒、纸张纤维、柔和手绘笔触",
-        light: "季节自然光，春日薄雾、夏日清光、秋日暖光、冬日炉火柔光",
-        mood: "季节感、诗意、清新、温暖、东方自然、生活仪式感",
-        score: ["B", "节气插画，适合内容营销和茶文化海报。"]
-      }
-    };
-
-    const teaTypes = {
-      longjing: {
-        label: "西湖龙井",
-        scene: "杭州西湖春日意境，西湖湖面，龙井茶山梯田，雾气远山，湖岸园林",
-        product: "淡青绿色新中式茶叶罐，极简高端包装设计，透明玻璃茶杯中舒展的龙井茶叶",
-        colors: ["#f5efe3", "#b8d3a6", "#6d9a6a", "#d7ded0", "#7d8779", "#eee6d3"],
-        palette: "米白、龙井浅绿、茶青绿、雾灰绿、象牙白、淡墨灰、柳芽绿、浅卡其",
-        extras: "雷峰塔、湖心亭、曲桥、白墙灰瓦江南建筑、现代城市天际线、柳树、白色花枝、竹林"
-      },
-      biluochun: {
-        label: "碧螺春",
-        scene: "苏州洞庭山茶园，低饱和自然草木气息，旧纸百科背景",
-        product: "卷曲成螺的碧螺春干茶，银绿隐翠，白毫显露，嫩绿色透明茶汤",
-        colors: ["#efe4c8", "#b8cfa0", "#78936d", "#ddd1b4", "#8a7354", "#fbf5e7"],
-        palette: "米黄色旧纸色、浅茶绿、灰绿色、草木绿、淡墨灰、暖棕色",
-        extras: "茶树植物结构、放大镜、白毫特征、风味雷达图、茶汤玻璃杯、制茶流程、冲泡参数"
-      },
-      keemun: {
-        label: "祁门红茶",
-        scene: "安徽祁门山地茶园，红茶产地风土地貌，复古旧书页背景",
-        product: "条索紧细乌润的祁门红茶干茶，青花瓷盖碗中的琥珀红茶汤，金毫细节",
-        colors: ["#efe1c3", "#9e513d", "#6a3d2b", "#c08a42", "#2f4f3a", "#f7f0df"],
-        palette: "泛黄旧纸色、红棕色、茶褐色、深木棕、墨绿色、琥珀红、金黄色",
-        extras: "金毫、全发酵工艺、香气图标、蜂蜜果香、风味雷达图、温度计、青花瓷盖碗"
-      },
-      puer: {
-        label: "普洱茶",
-        scene: "云南高山古茶林，云雾山谷，茶马古道，陈年茶仓氛围",
-        product: "普洱茶饼、深褐色干茶、陶土茶具、陈香茶汤",
-        colors: ["#eadfc9", "#6c4a32", "#3f3024", "#a67843", "#4d5f43", "#f6efe3"],
-        palette: "深褐、木棕、暖灰、陶土色、墨绿色、旧纸米黄",
-        extras: "古茶树、茶饼纹理、云南山林、竹篓、茶马古道、陶壶、陈年纸包装"
-      },
-      silverneedle: {
-        label: "白毫银针",
-        scene: "福建白茶山场，清晨薄雾，极简东方留白空间",
-        product: "银白色白毫茶芽，细腻绒毛，浅金色茶汤，白瓷茶具",
-        colors: ["#f7f2e8", "#e6e7dc", "#cfd8cb", "#aebbae", "#dee8d7", "#ffffff"],
-        palette: "象牙白、银灰、浅茶绿、雾灰白、淡金色、暖白",
-        extras: "白毫细节、茶芽特写、白瓷盖碗、晨雾、极简留白、细腻植物学结构"
-      },
-      huangshanmaofeng: {
-        label: "黄山毛峰",
-        scene: "安徽黄山云雾茶山，奇松、怪石、云海与高山茶园",
-        product: "黄山毛峰嫩芽，芽叶肥壮微卷，黄绿清亮茶汤，白瓷茶盏",
-        colors: ["#f4eedf", "#b9cf8f", "#6f8b52", "#d6d7bf", "#8a8b72", "#ffffff"],
-        palette: "云雾米白、黄绿、嫩茶绿、岩灰、松针绿、象牙白",
-        extras: "黄山云海、迎客松、山岩、嫩芽白毫、玻璃杯、茶山梯田"
-      },
-      taipinghoukui: {
-        label: "太平猴魁",
-        scene: "安徽太平湖周边茶山，高山薄雾，清朗山水",
-        product: "太平猴魁扁平挺直长叶，叶形舒展，浅绿茶汤，透明玻璃杯",
-        colors: ["#f5f0e3", "#a9c779", "#4f7b4a", "#dce5ce", "#78836b", "#f9f7ec"],
-        palette: "米白、长叶茶绿、草木绿、浅灰绿、湖水灰、象牙白",
-        extras: "长条茶叶、玻璃杯、太平湖、山岭、竹林、清澈茶汤"
-      },
-      xinyangmaojian: {
-        label: "信阳毛尖",
-        scene: "河南信阳浉河茶山，晨雾、山坡茶园、春季采茶场景",
-        product: "细圆紧直的信阳毛尖干茶，白毫显露，嫩绿明亮茶汤",
-        colors: ["#f1ead8", "#abc783", "#536f48", "#ccd8bd", "#6f7d65", "#fbf8ed"],
-        palette: "旧纸米白、嫩绿、深茶绿、雾灰绿、草木灰、暖白",
-        extras: "毛尖细芽、白毫、信阳茶山、采茶人物、玻璃杯、工艺流程"
-      },
-      anjibaicha: {
-        label: "安吉白茶",
-        scene: "浙江安吉竹海茶园，清新山谷，竹林与白化茶树",
-        product: "安吉白茶浅玉色茶芽，清透嫩绿茶汤，极简白瓷茶具",
-        colors: ["#f8f4e9", "#dce8c8", "#a6c98f", "#7ea56f", "#d8ded2", "#ffffff"],
-        palette: "象牙白、玉白绿、嫩竹绿、浅茶绿、雾灰白、暖白",
-        extras: "竹海、白化茶芽、清透茶汤、极简茶席、安吉山谷、晨雾"
-      },
-      luanguapian: {
-        label: "六安瓜片",
-        scene: "安徽大别山茶区，山谷云雾，片茶制作场景",
-        product: "六安瓜片单片叶形干茶，瓜子片状，清绿茶汤，竹编茶盘",
-        colors: ["#f0e7d3", "#789d57", "#3f633d", "#b5c99e", "#8a7a58", "#f8f2e4"],
-        palette: "旧纸米黄、片茶绿、深草绿、浅茶绿、竹编棕、暖白",
-        extras: "片状茶叶、竹编筛、手工制茶、山谷茶园、茶汤杯、产地图"
-      },
-      enshiyulu: {
-        label: "恩施玉露",
-        scene: "湖北恩施高山云雾茶园，蒸青工艺氛围，山地村落",
-        product: "恩施玉露针形绿茶，翠绿鲜润，清澈茶汤，蒸青工艺元素",
-        colors: ["#f4efdf", "#91bd72", "#427a4c", "#c8d9b8", "#5f7760", "#ffffff"],
-        palette: "米白、翠绿、茶青绿、雾灰绿、山林绿、象牙白",
-        extras: "针形绿茶、蒸青工艺、恩施山地、云雾、土家建筑、玻璃茶杯"
-      },
-      tieguanyin: {
-        label: "安溪铁观音",
-        scene: "福建安溪山地茶园，乌龙茶摇青与焙火工艺场景",
-        product: "颗粒卷曲的铁观音干茶，兰花香意象，金黄清亮茶汤，白瓷盖碗",
-        colors: ["#f1e6d0", "#5f7f4f", "#8b9e5f", "#d0a153", "#7a5d3a", "#fff8ea"],
-        palette: "暖米白、乌龙绿、橄榄绿、金黄茶汤、焙火棕、象牙白",
-        extras: "兰花香图标、摇青竹筛、安溪茶山、盖碗、乌龙工艺流程"
-      },
-      dahongpao: {
-        label: "武夷大红袍",
-        scene: "武夷山丹霞岩壁，岩骨花香，山谷茶园与岩茶焙火",
-        product: "条索壮结的岩茶干茶，橙红透亮茶汤，岩壁背景，紫砂壶",
-        colors: ["#eadcc6", "#8b4d35", "#4e372c", "#b86f3d", "#5f6d4a", "#f7f0de"],
-        palette: "岩壁褐、焙火棕、橙红茶汤、墨绿、米白、深木色",
-        extras: "武夷岩壁、九龙窠、焙火炭炉、紫砂壶、岩骨花香、山谷云雾"
-      },
-      fenghuangdancong: {
-        label: "凤凰单丛",
-        scene: "广东凤凰山高山茶园，云雾山脊，单丛古茶树",
-        product: "凤凰单丛条索乌褐油润，蜜兰香意象，金黄茶汤，潮汕工夫茶具",
-        colors: ["#f0e4cf", "#7b5035", "#b78340", "#496947", "#d4c09a", "#fff7e8"],
-        palette: "暖米白、乌褐、蜜金色、山林绿、浅卡其、象牙白",
-        extras: "凤凰山、古茶树、蜜兰香、潮汕工夫茶、盖碗、小茶杯、山脊云雾"
-      },
-      dongding: {
-        label: "冻顶乌龙",
-        scene: "台湾冻顶山茶园，云雾山坡，半球形乌龙茶制作场景",
-        product: "半球形冻顶乌龙干茶，蜜绿茶汤，陶瓷茶壶，山岚背景",
-        colors: ["#f3ead8", "#6f8f54", "#a8ad65", "#d1b269", "#76816b", "#fff8ec"],
-        palette: "米白、乌龙绿、橄榄绿、蜜金、雾灰绿、暖白",
-        extras: "台湾山岚、半球形茶叶、焙火工艺、陶壶、茶席、云雾茶园"
-      },
-      dianhong: {
-        label: "云南滇红",
-        scene: "云南高原茶山，热带山林，红茶发酵工艺与金芽特写",
-        product: "滇红金芽，金毫密布，琥珀红亮茶汤，黑陶茶具",
-        colors: ["#efe0c6", "#b65c37", "#7a3f2d", "#d29a49", "#344f37", "#fff4df"],
-        palette: "旧纸米黄、滇红橙、茶褐、金毫黄、山林绿、暖白",
-        extras: "金芽、云南大叶种、热带山林、发酵工艺、琥珀茶汤、放大镜"
-      },
-      lapsang: {
-        label: "正山小种",
-        scene: "武夷桐木关山林，松烟香氛围，传统红茶工艺",
-        product: "正山小种乌黑油润条索，橙红茶汤，松烟香意象，古朴茶具",
-        colors: ["#eadbc5", "#5a372b", "#9c5435", "#c37b3c", "#3f4f36", "#f6ecda"],
-        palette: "松烟褐、茶棕、橙红、木炭黑、山林绿、米白",
-        extras: "桐木关、松木烟熏、红茶条索、古法工艺、木屋、山林云雾"
-      },
-      jinjunmei: {
-        label: "金骏眉",
-        scene: "武夷高山茶区，金芽特写，高端红茶礼品氛围",
-        product: "金骏眉金黄黑褐相间干茶，金毫细密，琥珀金红茶汤，高端茶罐",
-        colors: ["#f2e4c9", "#c28a35", "#3b2b24", "#8f4b32", "#4d5d3f", "#fff7e6"],
-        palette: "金毫黄、深茶褐、琥珀红、墨绿、暖米白、象牙白",
-        extras: "金芽放大细节、高端礼盒、武夷山、红茶汤色、金色印刷、盖碗"
-      },
-      yingdeblack: {
-        label: "英德红茶",
-        scene: "广东英德茶园，南方丘陵茶山，红茶工艺与品牌场景",
-        product: "英德红茶乌润条索，红艳明亮茶汤，白瓷茶杯，岭南茶园背景",
-        colors: ["#efe2cb", "#964b35", "#6f3a2c", "#c47f42", "#4f6845", "#fff4e5"],
-        palette: "暖米白、红茶棕、琥珀红、岭南绿、深木色、象牙白",
-        extras: "岭南茶园、红茶汤色、花果香图标、制茶流程、茶杯、产地地图"
-      },
-      baimudan: {
-        label: "白牡丹",
-        scene: "福建白茶山场，春日茶园，白茶自然萎凋场景",
-        product: "白牡丹一芽一二叶，灰绿带白毫，浅杏黄茶汤，白瓷盖碗",
-        colors: ["#f6f0e4", "#cfd7be", "#8fa27b", "#e7d8ad", "#aeb3a1", "#ffffff"],
-        palette: "象牙白、灰绿、浅杏黄、白毫银、雾灰绿、暖白",
-        extras: "一芽二叶、白毫、萎凋竹匾、白瓷盖碗、春日茶园、花香意象"
-      },
-      shoumei: {
-        label: "寿眉",
-        scene: "福建白茶茶山，秋日自然萎凋，老白茶仓储氛围",
-        product: "寿眉宽叶茶，黄褐绿相间，浅橙茶汤，煮茶壶与白瓷杯",
-        colors: ["#efe1c9", "#9a7d45", "#6f7b50", "#c28b4c", "#7a6752", "#fff2df"],
-        palette: "秋叶黄、老白茶褐、橄榄绿、浅橙茶汤、暖米白",
-        extras: "宽叶白茶、老白茶饼、煮茶壶、竹匾、秋日茶山、陈化标签"
-      },
-      junshanyinzhen: {
-        label: "君山银针",
-        scene: "湖南岳阳君山岛，洞庭湖水汽，黄茶闷黄工艺意象",
-        product: "君山银针芽头挺直，黄亮茶汤，玻璃杯中茶芽竖立",
-        colors: ["#f4ead2", "#d5b35b", "#a2a96f", "#e5d9a7", "#6f7f66", "#fff8e8"],
-        palette: "米黄、嫩黄、黄茶金、湖水灰绿、象牙白、浅卡其",
-        extras: "洞庭湖、君山岛、茶芽竖立、闷黄工艺、玻璃杯、湖面雾气"
-      },
-      mengdinghuangya: {
-        label: "蒙顶黄芽",
-        scene: "四川蒙顶山茶园，云雾山地，黄茶传统工艺",
-        product: "蒙顶黄芽肥嫩芽头，黄绿明亮茶汤，川西山地背景",
-        colors: ["#f3e6c9", "#c9ad52", "#8f9d64", "#d7cf95", "#6f765d", "#fff6e5"],
-        palette: "黄芽金、米白、浅黄绿、山雾灰、茶青绿、暖白",
-        extras: "蒙顶山、黄芽、闷黄工艺、川西茶山、云雾、盖碗"
-      },
-      anhuadark: {
-        label: "安化黑茶",
-        scene: "湖南安化山地茶区，黑茶仓储，竹篓与砖茶陈化场景",
-        product: "安化黑茶砖、千两茶、深褐茶汤，金花菌点细节，陶壶",
-        colors: ["#eadbc4", "#4b3428", "#7b5a3c", "#b2773d", "#596146", "#f5ead8"],
-        palette: "黑茶褐、木仓棕、陶土色、金花黄、山林绿、旧纸米白",
-        extras: "黑茶砖、千两茶、金花菌、竹篓、木仓、陶壶、陈化标签"
-      },
-      liubao: {
-        label: "六堡茶",
-        scene: "广西梧州六堡茶仓，岭南山水，竹篓陈化与红浓茶汤",
-        product: "六堡茶散茶与竹篓，红浓槟榔香茶汤，陶瓷茶具",
-        colors: ["#eadcc7", "#5c3b2e", "#8c5436", "#b8733e", "#4f6347", "#f7eddd"],
-        palette: "槟榔褐、红浓茶汤、竹篓棕、岭南绿、旧纸米白",
-        extras: "竹篓、陈化仓、槟榔香、广西山水、红浓茶汤、老茶标签"
-      },
-      jasmine: {
-        label: "茉莉花茶",
-        scene: "福州茉莉花田与茶窨制场景，清晨花香氛围",
-        product: "茉莉花茶干茶与白色茉莉花，浅黄绿茶汤，玻璃茶杯",
-        colors: ["#f8f4e8", "#ffffff", "#cfe3b0", "#7da36c", "#eadcae", "#6f7a69"],
-        palette: "象牙白、茉莉白、浅茶绿、花蕊黄、雾灰绿、暖米白",
-        extras: "茉莉花、窨制工艺、花香图标、福州花田、茶杯、白色花枝"
-      },
-      osmanthusoolong: {
-        label: "桂花乌龙",
-        scene: "秋日桂花庭院，乌龙茶席，金桂飘香的东方场景",
-        product: "桂花乌龙干茶与金桂花瓣，金黄茶汤，陶瓷盖碗",
-        colors: ["#f3e5c9", "#d49a39", "#7a8f4e", "#8a5637", "#e8c86c", "#fff6e6"],
-        palette: "桂花金、乌龙绿、茶褐、秋日米白、暖黄、浅卡其",
-        extras: "桂花、秋日庭院、乌龙茶、金黄茶汤、花香意象、盖碗"
-      },
-      matcha: {
-        label: "抹茶",
-        scene: "东方茶室，抹茶粉、茶筅与极简茶席，柔和自然光",
-        product: "细腻抹茶粉、茶筅、抹茶碗、绿色茶汤泡沫，木质茶匙",
-        colors: ["#f3efe3", "#6fa84f", "#446f35", "#b8c996", "#d8c7a4", "#fffaf0"],
-        palette: "抹茶绿、深草绿、米白、竹木色、浅卡其、暖白",
-        extras: "茶筅、抹茶碗、抹茶粉、泡沫纹理、木匙、极简茶席"
-      },
-      custom: {
-        label: "自定义茶类",
-        scene: "",
-        product: "",
-        colors: ["#f6f0e5", "#9bb783", "#4c7a58", "#bd8337", "#69766a", "#fffaf0"],
-        palette: "低饱和茶绿色、米白、雾灰绿、浅卡其、淡墨灰",
-        extras: ""
-      }
-    };
-
-    const compositions = [
-      "左侧大面积留白，右侧主视觉，下方产品主体，S形视觉动线贯穿画面",
-      "中心主体 + 四周信息模块，标题在上方，模块化知识排版，图文结合",
-      "大面积留白，对角线视觉流动，茶壶、茶汤、山水形成S形动线",
-      "中央单主体构图，一片茶叶作为视觉焦点，叶片内部形成纵深空间",
-      "前景茶具与植物，中景茶园与人物，远景山峦、湖面、城市天际线与薄雾",
-      "产品居中置于浅色台面，左右以茶具和植物平衡构图，背景干净留白",
-      "礼盒展开式构图，主礼盒居中，茶罐、封套、丝带和节令植物环绕",
-      "茶席俯拍构图，茶具、干茶、茶汤和包装形成有秩序的网格式陈列",
-      "室内窗景构图，茶桌位于前景，窗外庭院或山水作为柔和背景",
-      "古籍书页式排版，中心标本主体，四周编号标签、注释和小图环绕",
-      "长卷式山水构图，茶山、人物、建筑沿横向展开，形成东方叙事画卷",
-      "对称仪式感构图，茶具与茶叶沿中轴排布，适合礼盒和古典茶席"
-    ];
-
-    const styles = [
-      "纸雕层叠插画，浅浮雕视觉，手工纸张肌理",
-      "复古植物学插画，钢笔线稿，水彩渲染，旧纸纹理",
-      "东方水墨，宣纸肌理，水彩扩散边缘，极简留白",
-      "微缩景观建模，茶叶造景，空气透视，柔和阴影",
-      "高级商业广告质感，干净画面，印刷级细节",
-      "真实产品摄影，柔和棚拍光，陶瓷玻璃真实反光，电商主图质感",
-      "宋代美学，工笔淡彩，绢本纹理，古典文人茶席",
-      "复古档案卡，旧书页排版，手写注释，博物馆标本质感",
-      "3D微缩模型，纸艺立体场景，浅景深，精致模型细节",
-      "节气水彩插画，东方自然物候，淡彩纸张肌理",
-      "日式侘寂茶席，粗陶、木纹、自然留白、静谧光影",
-      "现代极简包装设计，大面积留白，几何秩序，高端品牌画册感",
-      "国潮版画风，套色印刷，粗颗粒纸张，但保持低饱和高级感",
-      "电影感茶山风景，宽幅构图，薄雾逆光，真实自然纪录片质感"
-    ];
-
-    const corePresets = [
-      { label: "跟随图片类型", value: "auto" },
-      { label: "产品品牌主视觉", value: "画面以茶叶产品为主体，结合产地山水、茶园、东方建筑、茶具与植物，形成高级东方品牌主视觉。" },
-      { label: "茶叶百科图鉴", value: "画面围绕茶叶品类展开，以干茶、茶汤和茶树结构为核心，四周解析产地、工艺、香气、风味和冲泡方式。" },
-      { label: "茶汤化山水", value: "茶汤从茶壶或茶杯中流出，逐渐化为山峦、河流、瀑布、亭台和茶山，形成茶即山水的东方意境。" },
-      { label: "一叶一世界", value: "一片巨大茶叶化作微缩山水世界，叶脉转化为山谷、河流和山路，叶片内部包含建筑、树木和行旅人物。" },
-      { label: "茶空间生活方式", value: "安静的东方茶空间中，茶桌、窗景、茶具、植物和人物动作共同营造真实可进入的茶生活场景。" },
-      { label: "礼盒赠礼场景", value: "茶叶礼盒和包装展开为主体，结合节令植物、丝带、印章和茶席道具，突出礼赠、收藏和品牌高级感。" },
-      { label: "宋式点茶场景", value: "茶筅、建盏、茶粉、茶汤泡沫和古典案几构成主体，呈现古代文人茶事与宋韵审美。" }
-    ];
-
-    const elementPresets = {
-      plant: [
-        { label: "跟随图片类型", value: "auto" },
-        { label: "江南茶园植物", value: "龙井茶树、柳树、白色花枝、竹林、湖岸园林植被" },
-        { label: "植物学结构", value: "茶树枝、鲜叶、茶芽、白毫、茶花、植物切片、根茎结构" },
-        { label: "山野茶林", value: "古茶树、竹林、山间植被、苔藓、野花、云雾林木" },
-        { label: "节气植物", value: "春芽、荷叶、桂花、菊花、梅枝、松枝、竹叶、白色花枝" },
-        { label: "极简点缀", value: "少量茶枝、单枝插花、竹叶、干净植物剪影、留白植物装饰" }
-      ],
-      scene: [
-        { label: "跟随图片类型", value: "auto" },
-        { label: "江南山水", value: "西湖湖面、茶山梯田、曲桥、湖心亭、白墙灰瓦建筑、远山薄雾" },
-        { label: "旧纸图鉴", value: "泛黄旧纸、产地区域图、山水剖面、复古边框、手写标签" },
-        { label: "茶空间", value: "茶室、木质茶桌、格栅窗、庭院、屏风、书架、山水挂画" },
-        { label: "微缩茶山", value: "层叠茶山、云雾、亭台、曲桥、微缩村落、纸艺山水" },
-        { label: "古典书房", value: "宋式书房、屏风、案几、卷轴、窗棂、山水庭院" },
-        { label: "产品棚拍", value: "浅色影棚台面、东方茶席、木质桌面、柔和背景、干净留白" }
-      ],
-      people: [
-        { label: "跟随图片类型", value: "auto" },
-        { label: "采茶与游人", value: "采茶人物、湖面游船人物、园林行人、茶山小人物" },
-        { label: "制茶工艺人物", value: "手工揉捻人物、杀青动作、发酵工艺人物、制茶匠人" },
-        { label: "茶空间人物", value: "泡茶人物、品茶人物、茶席主人、安静交谈的访客" },
-        { label: "古典文人", value: "点茶人物、文人雅士、执盏人物、侍茶人物、行旅人物" },
-        { label: "无人物", value: "无人物，突出茶叶、茶具、产品和空间氛围" }
-      ],
-      object: [
-        { label: "跟随图片类型", value: "auto" },
-        { label: "商业产品茶具", value: "茶叶罐、茶盒、透明玻璃茶杯、白瓷盖碗、竹编茶盘、茶匙" },
-        { label: "百科信息模块", value: "放大镜、干茶、茶汤玻璃杯、风味雷达图、制茶流程、冲泡参数、温度计" },
-        { label: "古典茶席器物", value: "建盏、茶筅、茶粉、茶勺、茶碗、卷轴、古籍、香炉" },
-        { label: "生活方式茶具", value: "紫砂壶、盖碗、公道杯、茶杯、茶巾、香炉、茶叶罐、茶点" },
-        { label: "礼盒包装道具", value: "礼盒、茶罐、封套、丝带、印章、茶杯、烫金标签、包装纸" }
-      ]
-    };
-
-    const spacePresets = [
-      { label: "纵深空间：前景 / 中景 / 远景", value: "前景：茶具、产品、茶叶、植物装饰；\n中景：茶园、曲桥、亭台、采茶人物；\n远景：湖面、山峦、城市天际线、薄雾。" },
-      { label: "信息图结构：中心 / 左侧 / 右侧 / 下方", value: "中心主体：干茶、茶汤或茶叶标本；\n左侧模块：茶树结构、产地信息、植物学细节；\n右侧模块：风味雷达图、香气图标、汤色解析；\n下方模块：制茶工艺流程、冲泡参数、知识注释。" },
-      { label: "产品结构：主体 / 辅助 / 背景", value: "主体区域：茶叶礼盒、茶罐或核心产品；\n辅助区域：干茶、茶匙、茶杯、盖碗、植物点缀；\n背景区域：浅色台面、柔和阴影、品牌留白、东方纹理。" },
-      { label: "意境结构：起点 / 路径 / 终点", value: "视觉起点：茶壶、茶杯或茶汤流动；\n流动路径：茶汤化为山水、河流、瀑布、茶山和小路；\n画面终点：远山、茶亭、行人、云雾与留白。" },
-      { label: "茶空间结构：桌面 / 人物 / 环境", value: "桌面区域：茶桌、茶具、茶汤、干茶和手部动作；\n人物区域：泡茶人物、品茶人物、茶席主人；\n环境区域：屏风、插花、窗外庭院、竹影和山水背景。" },
-      { label: "微缩景观结构：入口 / 场景 / 远山", value: "入口区域：茶叶边缘、山路入口、行旅人物；\n场景区域：村落、树木、亭台、茶山梯田；\n远山区域：层叠山峦、山顶建筑、雾化远山。" },
-      { label: "古典茶席结构：器物 / 人物 / 背景", value: "器物区域：建盏、茶筅、茶粉、古籍、香炉；\n人物区域：点茶人物、执盏人物、文人雅士；\n背景区域：案几、屏风、窗棂、庭院山水。" }
-    ];
-
-    const texturePresets = [
-      { label: "跟随图片类型", value: "auto" },
-      { label: "纸雕压纹", value: "手工纸雕层叠质感，压纹纸张肌理，浅浮雕阴影，高级印刷触感" },
-      { label: "旧纸水彩", value: "泛黄旧纸纹理，钢笔线稿质感，手绘水彩渲染，复古印刷感" },
-      { label: "宣纸水墨", value: "宣纸肌理，水墨晕染感，水彩扩散边缘，柔和颗粒感，手绘笔触" },
-      { label: "真实产品材质", value: "陶瓷釉面、玻璃透明质感、纸盒压纹、金属烫金、木纹桌面、真实茶叶纹理" },
-      { label: "微缩模型", value: "磨砂纸艺、细腻模型材质、陶瓷、透明玻璃、柔和塑形阴影" },
-      { label: "古典绢本", value: "绢本纹理、宣纸肌理、陶盏黑釉、茶沫泡沫、古籍纸张" }
-    ];
-
-    const lightPresets = [
-      { label: "跟随图片类型", value: "auto" },
-      { label: "春日柔光", value: "柔和漫射光，春日上午柔光，低对比空气感，薄雾氛围，空气透视" },
-      { label: "平面图鉴光", value: "平面柔光，无明显光源，低对比自然光，手绘阴影，水彩叠色层次" },
-      { label: "水墨雾化光", value: "柔和漫射光，无明显光源，水彩晕染式光影，留白过渡，边缘虚化" },
-      { label: "产品棚拍光", value: "柔和摄影棚漫射光，低反差阴影，真实高光，干净背景光，产品边缘清晰" },
-      { label: "窗边自然光", value: "窗边自然光，柔和侧逆光，空气感，室内低对比阴影，晨昏茶室氛围" },
-      { label: "微缩模型光", value: "柔和全局光，浅景深，微缩模型光影，空气透视，低对比阴影" }
-    ];
-
-    const palettePresets = [
-      { label: "跟随茶叶品类", value: "auto" },
-      { label: "龙井浅绿", value: "米白、龙井浅绿、茶青绿、雾灰绿、象牙白、淡墨灰、柳芽绿、浅卡其" },
-      { label: "旧纸草本", value: "米黄色旧纸色、浅茶绿、灰绿色、草木绿、淡墨灰、暖棕色" },
-      { label: "红茶暖棕", value: "泛黄旧纸色、红棕色、茶褐色、深木棕、墨绿色、琥珀红、金黄色" },
-      { label: "水墨灰绿", value: "茶绿色、水墨浅绿、淡青绿、象牙白、雾灰绿、米白色" },
-      { label: "白茶极简", value: "象牙白、银灰、浅茶绿、雾灰白、淡金色、暖白" },
-      { label: "黑茶陈香", value: "黑茶褐、木仓棕、陶土色、金花黄、山林绿、旧纸米白" }
-    ];
-
-    const moodPresets = [
-      { label: "跟随图片类型", value: "auto" },
-      { label: "东方品牌感", value: "东方雅致，文人茶意，宁静温润，高级东方品牌感，春日清新，茶文化仪式感" },
-      { label: "博物学知识感", value: "安静自然，博物学气息，茶文化知识感，东方草本美学，学术图鉴感" },
-      { label: "禅意山水", value: "空灵，宁静，禅意，东方诗意，文人气质，山水意境，茶道哲学感" },
-      { label: "礼赠高级感", value: "礼赠感，节日仪式感，东方雅致，温润高级，品牌收藏感" },
-      { label: "现代茶生活", value: "安静，温润，松弛，文人气质，现代东方生活，茶席仪式感" },
-      { label: "古典宋韵", value: "古雅，清寂，文人气，仪式感，宋韵，含蓄高级" }
-    ];
-
-    const negativeSets = {
-      minimal: "避免：高饱和荧光色、赛博朋克、杂乱背景、文字乱码、噪点、边缘模糊。",
-      balanced: "避免：高饱和荧光色、赛博朋克、强烈硬光、杂乱背景、低端电商风、粗糙笔触、扁平卡通、过度摄影棚风格、产品比例失衡、文字乱码、建筑透视错误、现代UI界面感、3D塑料感、噪点、边缘模糊。",
-      strict: "避免：高饱和荧光色、赛博朋克、强烈硬光、杂乱背景、低端电商风、粗糙笔触、扁平卡通、低幼插画、过度摄影棚风格、产品比例失衡、文字乱码、建筑透视错误、现代UI界面感、乱码标签、模糊线稿、AI随机解剖错误、信息排版杂乱、3D塑料感、廉价贴图感、噪点、边缘模糊。"
-    };
-
-    const state = {
-      format: "竖版海报，适合小红书、广告KV、电商主视觉"
-    };
-
-    const $ = (id) => document.getElementById(id);
-
-    function fillSelect(select, data) {
-      select.innerHTML = Object.entries(data).map(([key, value]) => `<option value="${key}">${value.label}</option>`).join("");
-    }
-
-    function fillArraySelect(select, items) {
-      select.innerHTML = items.map((item, index) => {
-        const label = typeof item === "string" ? item : item.label;
-        return `<option value="${index}">${label}</option>`;
-      }).join("");
-    }
-
-    function presetValue(selectId, items, fallback) {
-      const item = items[Number($(selectId).value)];
-      if (!item) return fallback;
-      if (typeof item === "string") return item;
-      return item.value === "auto" ? fallback : item.value;
-    }
-
-    function selectedType() {
-      return visualTypes[$("visualType").value];
-    }
-
-    function selectedTea() {
-      return teaTypes[$("teaType").value];
-    }
-
-    function syncTeaDefaults() {
-      const tea = selectedTea();
-      $("scene").value = tea.scene;
-      $("product").value = tea.product;
-      $("extraElements").value = tea.extras;
-    }
-
-    function buildPrompt() {
-      const type = selectedType();
-      const tea = selectedTea();
-      const scene = $("scene").value.trim() || tea.scene || "东方茶文化场景";
-      const product = $("product").value.trim() || tea.product || `${tea.label}茶叶主体`;
-      const extra = $("extraElements").value.trim();
-      const detail = $("detailLevel").value;
-      const negative = negativeSets[$("negativeMode").value];
-      const core = presetValue("corePreset", corePresets, type.core);
-      const plant = presetValue("plantPreset", elementPresets.plant, type.elements.plant);
-      const sceneElements = presetValue("scenePreset", elementPresets.scene, type.elements.scene);
-      const people = presetValue("peoplePreset", elementPresets.people, type.elements.people);
-      const objects = presetValue("objectPreset", elementPresets.object, type.elements.object);
-      const composition = compositions[Number($("compositionSelect").value)] || compositions[0];
-      const space = spacePresets[Number($("spacePreset").value)]?.value || spacePresets[0].value;
-      const style = styles[Number($("styleSelect").value)] || styles[0];
-      const texture = presetValue("texturePreset", texturePresets, type.texture);
-      const light = presetValue("lightPreset", lightPresets, type.light);
-      const palette = presetValue("palettePreset", palettePresets, tea.palette);
-      const mood = presetValue("moodPreset", moodPresets, type.mood);
-      const intro = `${tea.label}${type.intro}`;
-      const coreWithTea = core.replaceAll("所选茶叶", tea.label).replaceAll("茶叶品类", tea.label);
-
-      return `${intro}，${scene}，低饱和东方美学。
-
-核心画面：
-${coreWithTea}
-
-主体对象：
-${product}
-
-画面包含：
-${extra || tea.extras || "茶树、茶具、茶汤、茶山、东方建筑、茶文化人物"}
-
-植物元素：
-${plant}
-
-场景元素：
-${sceneElements}
-
-人物元素：
-${people}
-
-茶具与信息元素：
-${objects}
-
-整体构图：
-${state.format}，
-${composition}。
-
-画面结构：
-${space}
-
-风格：
-${type.style}，
-${style}。
-
-材质表现：
-${texture}
-
-光影：
-${light}
-
-主色系：
-${palette}
-
-氛围：
-${mood}
-
-质量：
-${detail}，高清，4K/8K，清晰纸张纹理，层次丰富，高级东方审美，干净画面。
-
-${negative}`;
-    }
-
-    function renderPalette() {
-      const tea = selectedTea();
-      $("paletteName").textContent = tea.palette;
-      $("swatches").innerHTML = tea.colors.map((color) => `<span class="swatch" style="background:${color}"></span>`).join("");
-    }
-
-    function renderScore() {
-      const [letter, text] = selectedType().score;
-      $("scoreType").textContent = letter;
-      $("scoreText").textContent = text;
-    }
-
-    function generate() {
-      const prompt = buildPrompt();
-      $("promptOutput").value = prompt;
-      $("counter").textContent = `${prompt.length} 字`;
-      renderPalette();
-      renderScore();
-    }
-
-    function showToast(text) {
-      const toast = $("toast");
-      toast.textContent = text;
-      toast.classList.add("show");
-      clearTimeout(showToast.timer);
-      showToast.timer = setTimeout(() => toast.classList.remove("show"), 1700);
-    }
-
-    async function copyPrompt() {
-      const text = $("promptOutput").value;
-      try {
-        await navigator.clipboard.writeText(text);
-        showToast("已复制到剪贴板");
-      } catch {
-        $("promptOutput").select();
-        document.execCommand("copy");
-        showToast("已选中并复制");
-      }
-    }
-
-    function init() {
-      fillSelect($("visualType"), visualTypes);
-      fillSelect($("teaType"), teaTypes);
-      fillArraySelect($("corePreset"), corePresets);
-      fillArraySelect($("plantPreset"), elementPresets.plant);
-      fillArraySelect($("scenePreset"), elementPresets.scene);
-      fillArraySelect($("peoplePreset"), elementPresets.people);
-      fillArraySelect($("objectPreset"), elementPresets.object);
-      fillArraySelect($("compositionSelect"), compositions);
-      fillArraySelect($("spacePreset"), spacePresets);
-      fillArraySelect($("styleSelect"), styles);
-      fillArraySelect($("texturePreset"), texturePresets);
-      fillArraySelect($("lightPreset"), lightPresets);
-      fillArraySelect($("palettePreset"), palettePresets);
-      fillArraySelect($("moodPreset"), moodPresets);
-
-      document.querySelectorAll("#format button").forEach((button) => {
-        button.addEventListener("click", () => {
-          document.querySelectorAll("#format button").forEach((b) => b.classList.remove("active"));
-          button.classList.add("active");
-          state.format = button.dataset.value;
-          generate();
-        });
-      });
-
-      $("visualType").addEventListener("change", generate);
-      $("teaType").addEventListener("change", () => {
-        syncTeaDefaults();
-        generate();
-      });
-      [
-        "corePreset", "scene", "product", "extraElements",
-        "plantPreset", "scenePreset", "peoplePreset", "objectPreset",
-        "compositionSelect", "spacePreset", "styleSelect",
-        "texturePreset", "lightPreset", "palettePreset", "moodPreset",
-        "detailLevel", "negativeMode"
-      ].forEach((id) => {
-        $(id).addEventListener("input", generate);
-        $(id).addEventListener("change", generate);
-      });
-
-      $("copyBtn").addEventListener("click", copyPrompt);
-      $("resetBtn").addEventListener("click", () => {
-        $("visualType").value = "commercial";
-        $("teaType").value = "longjing";
-        state.format = "竖版海报，适合小红书、广告KV、电商主视觉";
-        document.querySelectorAll("#format button").forEach((b, index) => b.classList.toggle("active", index === 0));
-        [
-          "corePreset", "plantPreset", "scenePreset", "peoplePreset", "objectPreset",
-          "compositionSelect", "spacePreset", "styleSelect", "texturePreset",
-          "lightPreset", "palettePreset", "moodPreset"
-        ].forEach((id) => { $(id).value = "0"; });
-        $("detailLevel").value = "克制干净，留白充足，细节精致但不拥挤";
-        $("negativeMode").value = "balanced";
-        syncTeaDefaults();
-        generate();
-      });
-
-      syncTeaDefaults();
-      generate();
-    }
-
-    init();
-  </script>
 </body>
 </html>

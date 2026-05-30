@@ -16,6 +16,7 @@
 ```text
 .
 ├── index.html
+├── prompt-generator.html
 ├── README.md
 ├── CHANGELOG.md
 └── DEPLOY.md
@@ -23,7 +24,13 @@
 
 ## 本地预览
 
-直接双击 `index.html` 即可打开。
+直接双击 `index.html` 即可打开导航页。
+
+提示词生成器页面位于：
+
+```text
+prompt-generator.html
+```
 
 也可以用本地静态服务器预览：
 
@@ -49,11 +56,12 @@ http://127.0.0.1:8765/
 
 ## 维护建议
 
-- 新增茶叶品类：编辑 `index.html` 中的 `teaTypes`
-- 新增图片类型：编辑 `index.html` 中的 `visualTypes`
-- 新增构图：编辑 `compositions`
-- 新增风格：编辑 `styles`
-- 新增画面结构：编辑 `spacePresets`
+- 新增导航入口：编辑 `index.html`
+- 新增茶叶品类：编辑 `prompt-generator.html` 中的 `teaTypes`
+- 新增图片类型：编辑 `prompt-generator.html` 中的 `visualTypes`
+- 新增构图：编辑 `prompt-generator.html` 中的 `compositions`
+- 新增风格：编辑 `prompt-generator.html` 中的 `styles`
+- 新增画面结构：编辑 `prompt-generator.html` 中的 `spacePresets`
 - 新增材质、光影、色彩、氛围：分别编辑对应的 preset 数组
 
 每次修改后，建议至少测试：
