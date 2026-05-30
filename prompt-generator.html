@@ -474,19 +474,16 @@
         <summary><div class="section-title"><span>基础设定</span><span>01</span></div></summary>
         <div class="section-body">
           <div class="field">
-            <label for="visualType">图片类型</label>
+            <label for="platformType">发布平台</label>
+            <select id="platformType"></select>
+          </div>
+          <div class="field">
+            <label for="visualType">内容类型</label>
             <select id="visualType"></select>
           </div>
           <div class="field">
             <label for="teaType">茶叶品类</label>
             <select id="teaType"></select>
-          </div>
-          <div class="field">
-            <label for="format">画幅</label>
-            <div class="segmented" id="format">
-              <button type="button" data-value="竖版海报，适合小红书、广告KV、电商主视觉" class="active">竖版海报</button>
-              <button type="button" data-value="横版画面，适合课程封面、PPT视觉页、网页首屏">横版画面</button>
-            </div>
           </div>
         </div>
       </details>
@@ -606,7 +603,7 @@
           <div>
             <div class="kicker">TEA PROMPT BUILDER</div>
             <h2 class="headline">把茶叶视觉拆成可复制的完整提示词</h2>
-            <p class="summary">根据你提供的提示词结构，工具会自动组合图片类型、茶名、主画面、元素、构图、画面结构、风格、材质、光影、色彩、氛围、质量词和负面词。</p>
+            <p class="summary">根据你提供的提示词结构，工具会自动组合发布平台、内容类型、茶名、主画面、元素、构图、画面结构、风格、材质、光影、色彩、氛围、质量词和负面词。</p>
           </div>
           <div class="actions">
             <button class="ghost-btn" id="resetBtn" type="button">重置</button>
@@ -627,9 +624,9 @@
             <div class="module">
               <h3>生成结构</h3>
               <div class="stack">
-                <div class="metric"><b>1</b><span>先确定商业KV、产品摄影、礼盒包装、知识图鉴、水墨意境或茶空间。</span></div>
-                <div class="metric"><b>2</b><span>再选择具体茶名，覆盖绿茶、红茶、乌龙、白茶、黄茶、黑茶、花茶。</span></div>
-                <div class="metric"><b>3</b><span>最后加入构图、画面结构、材质、光影、色彩和负面词。</span></div>
+                <div class="metric"><b>1</b><span>先选平台：视频号、抖音、小红书、朋友圈或贴图，决定画幅和阅读场景。</span></div>
+                <div class="metric"><b>2</b><span>再选类型：知识图、产品图、详情图、生活图、大字图或PK图，决定内容结构。</span></div>
+                <div class="metric"><b>3</b><span>最后选择具体茶名、构图、画面结构、材质、光影、色彩和负面词。</span></div>
               </div>
             </div>
 
@@ -654,198 +651,140 @@
   <div class="toast" id="toast">已复制到剪贴板</div>
 
   <script>
+    const platformTypes = {
+      videoAccount: {
+        label: "视频号",
+        format: "竖版 9:16 视频封面，适合微信视频号信息流，标题区留在上方三分之一，主体居中偏上，底部预留账号与按钮安全区",
+        rhythm: "稳重可信，适合私域传播和熟人关系链，表达克制但清晰，避免夸张噱头",
+        text: "中等文字密度，标题 8-14 字，副标题可补充产地、工艺或卖点",
+        score: ["A", "适合视频号封面，重点是可信、清晰和转发友好。"]
+      },
+      douyin: {
+        label: "抖音",
+        format: "竖版 9:16 短视频封面，强首屏冲击，主体占画面 55%-70%，大标题醒目，关键元素集中在中部安全区",
+        rhythm: "强对比、强钩子、快速识别，适合停留率和点击率导向，但保持茶叶高级感",
+        text: "高文字识别度，标题 6-10 字，适合痛点、结果、对比或利益点表达",
+        score: ["A", "适合抖音封面，重点是第一眼吸引和移动端可读性。"]
+      },
+      xiaohongshu: {
+        label: "小红书",
+        format: "竖版 3:4 或 4:5 封面，适合小红书笔记流，标题与主体平衡，保留干净留白和收藏感",
+        rhythm: "审美种草、知识感、生活方式表达，适合茶叶测评、科普、选购和场景化内容",
+        text: "中高文字密度，可使用标题、标签、要点模块，强调精致排版和封面可读性",
+        score: ["A", "适合小红书封面，重点是好看、可收藏、信息一眼明确。"]
+      },
+      moments: {
+        label: "朋友圈",
+        format: "方形 1:1 或竖版 4:5，适合朋友圈浏览，主体明确，画面稳重，避免过度广告化",
+        rhythm: "熟人私域、品牌信任、节日问候和产品推荐，语气自然温和",
+        text: "低到中等文字密度，标题短，适合礼赠、上新、节气和茶生活表达",
+        score: ["B", "适合朋友圈传播，重点是自然、可信、不像硬广。"]
+      },
+      sticker: {
+        label: "贴图",
+        format: "方形 1:1 贴图素材，主体完整居中，透明背景或纯净浅底，边缘清晰，适合二次排版和社媒贴纸",
+        rhythm: "单元素强识别，减少复杂场景，突出茶叶、茶具、茶汤、标题字或表情化符号",
+        text: "极低文字密度，最多 2-6 字，文字需粗壮清晰，避免小字和复杂信息模块",
+        score: ["B", "适合贴图素材，重点是主体干净、边缘清楚、方便叠加。"]
+      }
+    };
+
     const visualTypes = {
-      commercial: {
-        label: "新中式茶叶商业海报 / 品牌KV",
-        intro: "新中式东方茶文化商业海报，高端茶叶品牌KV，高级电商主视觉",
-        core: "画面以茶叶产品为主体，结合产地山水、茶园、东方建筑、茶具与植物，形成高级东方品牌主视觉。",
+      knowledge: {
+        label: "知识图",
+        intro: "茶叶知识图，茶文化科普信息图，适合社媒收藏的茶叶百科视觉",
+        core: "画面围绕所选茶叶展开，清晰展示茶叶外形、产地、工艺、香气、汤色、口感和冲泡要点，形成一眼能读懂的知识结构。",
         elements: {
-          plant: "茶树、柳树、白色花枝、竹林、山间植被",
-          scene: "湖面、茶山梯田、远山薄雾、江南园林、白墙灰瓦建筑",
-          people: "采茶人物、游船人物、园林行人",
-          object: "茶叶罐、透明玻璃茶杯、舒展茶叶、白瓷盖碗、竹编茶盘"
+          plant: "茶树结构、茶芽、鲜叶、干茶、白毫或条索细节、产地植被",
+          scene: "信息分区、产地小地图、风味标签、冲泡参数、浅色纸张背景",
+          people: "少量采茶人物、制茶动作或手部冲泡动作，作为辅助信息",
+          object: "干茶、茶汤杯、放大镜、风味雷达图、图标、箭头、编号标签、参数卡片"
         },
-        style: "国风新中式，东方美学海报，纸雕层叠插画，浅浮雕视觉，微缩景观建模，高级商业广告质感",
-        texture: "手工纸雕层叠质感，压纹纸张肌理，丝绸般柔和反光，陶瓷与纸面融合触感，高级印刷质感",
-        light: "柔和漫射光，春日上午柔光，低对比空气感，薄雾氛围，空气透视，浅浮雕阴影",
-        mood: "东方雅致，文人茶意，宁静温润，高级东方品牌感，春日清新，茶文化仪式感",
-        score: ["A", "商业主视觉，适合品牌海报和电商KV。"]
+        style: "茶叶科普百科海报，植物学插画与信息图结合，清晰模块化排版，东方自然科学视觉",
+        texture: "纸张纹理，清晰线稿，轻水彩，精致图标，印刷级信息图质感",
+        light: "平面柔光，低对比，信息清晰优先，无强烈硬光",
+        mood: "专业、清晰、可信、可收藏、茶文化知识感",
+        score: ["A", "知识图，适合科普、选购指南和收藏型内容。"]
       },
-      infographic: {
-        label: "茶叶知识图鉴 / 科普信息图",
-        intro: "茶叶知识图谱，茶文化百科插画海报，复古植物学图鉴风格",
-        core: "画面围绕所选茶叶展开，以干茶、茶汤和茶树结构为中心，通过放大镜强调茶叶形态、色泽、毫毛或条索等核心特征。",
+      product: {
+        label: "产品图",
+        intro: "茶叶产品图，高级茶叶主图，适合社媒封面和电商视觉的产品展示",
+        core: "画面以所选茶叶产品为绝对主体，突出包装质感、茶汤、干茶和核心卖点，背景服务于产品，不抢主体。",
         elements: {
-          plant: "茶树植物结构、茶芽、白毫、山间植被",
-          scene: "旧纸背景、产地区域图、山水剖面、手绘边框",
-          people: "手工揉捻动作、采茶人物、制茶工艺人物",
-          object: "放大镜、干茶、茶汤玻璃杯、风味雷达图、制茶流程、冲泡参数"
+          plant: "茶枝、茶芽、竹叶、季节花枝、少量自然植物点缀",
+          scene: "干净台面、东方茶席、浅色背景、茶山或产地虚化背景、品牌陈列空间",
+          people: "可加入手部奉茶、冲泡或拿取产品动作，人物不抢产品主体",
+          object: "茶叶罐、茶盒、礼盒、干茶堆、茶汤杯、盖碗、公道杯、茶匙、包装纸"
         },
-        style: "复古植物学插画，茶叶百科图鉴，东方自然科学手绘，轻复古纸张风，手绘线稿上色，博物学插画风格",
-        texture: "泛黄旧纸纹理，钢笔线稿质感，手绘水彩渲染，复古印刷感，博物馆图谱感",
-        light: "平面柔光，无明显光源，低对比自然光，手绘阴影，水彩叠色层次",
-        mood: "安静自然，博物学气息，茶文化知识感，东方草本美学，学术图鉴感",
-        score: ["B", "百科图鉴，适合科普海报和知识内容。"]
+        style: "高端产品摄影，现代新中式静物，商业主图，真实材质表现，干净高级",
+        texture: "陶瓷、玻璃、纸盒压纹、烫金、木纹、干茶细节、包装材质清晰",
+        light: "柔和商业布光，产品边缘清晰，低反差阴影，真实高光",
+        mood: "高级、干净、可信、礼品感、品牌感",
+        score: ["A", "产品图，适合主推单品、上新和商品封面。"]
       },
-      processDiagram: {
-        label: "茶叶工艺解析图 / 风味百科海报",
-        intro: "茶叶工艺解析图，东方茶文化百科插画海报，茶汤风味信息图",
-        core: "画面围绕所选茶叶展开，以茶汤、干茶和工艺流程为中心，展示外形特征、汤色、香气、风味结构、产地风土和制作工艺。",
+      detail: {
+        label: "产品详情图",
+        intro: "茶叶产品详情图，卖点解析图，适合展示包装、产地、工艺、口感和冲泡信息",
+        core: "画面以所选茶叶产品为中心，拆解包装细节、干茶形态、茶汤颜色、核心卖点、产地背书和冲泡参数，形成有购买决策价值的详情视觉。",
         elements: {
-          plant: "茶树、鲜叶、金毫、墨绿色叶片、山地植被",
-          scene: "泛黄旧纸、山地风土地貌、复古边框、产地剖面图",
-          people: "制茶匠人、采茶人物、发酵工艺示意人物",
-          object: "青花瓷盖碗、红茶干茶、放大镜、风味雷达图、香气图标、温度计"
+          plant: "茶芽、干茶微距、鲜叶、茶山植被、茶树局部结构",
+          scene: "产品细节分区、卖点标签、材质放大框、产地小图、参数说明区",
+          people: "手部冲泡、开盒、取茶、闻香动作，作为细节辅助",
+          object: "包装局部、封口、罐身纹理、干茶特写、茶汤、冲泡器具、卖点图标、参数卡"
         },
-        style: "红茶百科信息图，复古植物学插画，自然科学手绘风，东方茶文化图鉴，欧式自然图谱风格",
-        texture: "泛黄旧纸纹理，手绘水彩触感，钢笔线稿质感，复古印刷感，手工百科插图风格",
-        light: "平面柔光，低对比自然光，手绘阴影，水彩叠色，纸张纹理层次",
-        mood: "温暖沉静，东方古典感，匠人工艺感，博物学气息，红茶暖色调",
-        score: ["B", "红茶百科，适合工艺解析和风味展示。"]
-      },
-      ink: {
-        label: "东方水墨茶文化意境海报",
-        intro: "东方水墨茶文化概念海报，新中式极简插画，茶汤化山水",
-        core: "一只绿色茶壶倾倒茶汤，流淌出的茶水逐渐演化为山峦、河流、瀑布、亭台、茶山和小路，形成茶即山水的东方意境。",
-        elements: {
-          plant: "茶山、草地、竹林、山间树木、水墨植被",
-          scene: "山峦、河流、瀑布、茶亭、远山雾气、宣纸留白",
-          people: "背竹篓茶人、山间行人、东方隐逸人物",
-          object: "绿色茶壶、茶汤、水墨山体、茶绿色水流"
-        },
-        style: "东方水墨风，新中式极简海报，水彩晕染插画，国风留白设计，文人山水视觉，禅意茶文化艺术海报",
-        texture: "宣纸肌理，水墨晕染感，水彩扩散边缘，柔和颗粒感，手绘笔触，空气雾化感",
-        light: "柔和漫射光，无明显光源，水彩晕染式光影，留白过渡，边缘虚化",
-        mood: "空灵，宁静，禅意，东方诗意，文人气质，山水意境，茶道哲学感",
-        score: ["C", "概念意境，适合品牌调性和艺术海报。"]
-      },
-      leafworld: {
-        label: "茶叶山水微缩景观 / 一叶一世界",
-        intro: "东方极简概念插画，茶叶山水意境海报，新中式微缩景观视觉",
-        core: "一片巨大的绿色茶叶化作微缩山水世界，叶脉转化为山谷、河流和山路，叶片内部包含山峦、村落、古建筑、树木和行旅人物。",
-        elements: {
-          plant: "巨大茶叶、叶脉纹理、茶山、树木、山间植被",
-          scene: "山峦、山路、村落、东方古建筑、山间寺院、雾化远山",
-          people: "骑马行旅人物、古道行人、文人旅途人物",
-          object: "茶叶造景、微缩景观、叶中山河、山谷纹理"
-        },
-        style: "新中式极简插画，东方概念艺术，微缩景观风格，纸雕式层叠视觉，东方自然主义，禅意艺术海报",
-        texture: "微缩景观模型质感，纸雕层叠感，茶叶肌理纹路，柔和空气感，精细微景观细节",
-        light: "柔和漫射光，低对比柔光，空气雾化感，微缩景观光影，山体渐变与空气透视",
-        mood: "宁静，禅意，空灵，山野感，东方哲学感，文人气质，微缩奇境感",
-        score: ["C", "概念艺术，适合高级创意视觉。"]
-      },
-      productPhoto: {
-        label: "高端产品摄影 / 茶叶电商主图",
-        intro: "高端茶叶产品摄影，现代东方电商主图，精致商业静物摄影",
-        core: "画面以茶叶产品、干茶、茶汤和茶具组成高级静物场景，突出包装质感、茶汤通透度和茶叶细节，形成干净克制的商业产品画面。",
-        elements: {
-          plant: "少量茶枝、茶芽、竹叶、季节花枝、自然植物点缀",
-          scene: "浅色影棚台面、东方茶席、木质桌面、柔和背景、干净留白",
-          people: "可加入手部冲泡动作、奉茶动作、茶席布置动作",
-          object: "茶叶罐、茶盒、干茶堆、茶汤杯、盖碗、公道杯、茶匙、包装纸"
-        },
-        style: "高级商业摄影，茶叶电商主图，现代新中式静物，真实材质表现，克制高级感",
-        texture: "陶瓷釉面、玻璃透明质感、纸盒压纹、金属烫金、木纹桌面、茶叶干燥卷曲纹理",
-        light: "柔和摄影棚漫射光，低反差阴影，真实高光，干净背景光，产品边缘清晰",
-        mood: "高级、干净、可信、精致、东方礼品感、现代茶生活",
-        score: ["A", "产品摄影，适合电商主图和包装展示。"]
-      },
-      giftBox: {
-        label: "茶叶礼盒包装 / 节日赠礼海报",
-        intro: "高端茶叶礼盒包装海报，东方节日赠礼视觉，新中式品牌礼盒KV",
-        core: "画面以茶叶礼盒和包装展开为主体，结合节令植物、印章、纸张纹理和茶席道具，突出礼赠、收藏和品牌高级感。",
-        elements: {
-          plant: "松枝、竹叶、梅花、桂花、茶枝、白色花枝、节令植物",
-          scene: "东方礼盒陈列台、节日茶席、浅色背景、山水纹样、印章装饰",
-          people: "可加入递礼手势、茶席主人、节日访客剪影",
-          object: "礼盒、茶罐、封套、丝带、印章、茶杯、盖碗、茶匙、烫金标签"
-        },
-        style: "新中式礼盒海报，高端包装设计，东方节日视觉，精品礼赠商业广告",
-        texture: "特种纸纹理、烫金工艺、压纹纸张、丝带反光、陶瓷釉面、细腻包装边缘",
-        light: "柔和暖光，低对比商业布光，局部烫金高光，细腻投影",
-        mood: "礼赠感，节日仪式感，东方雅致，温润高级，品牌收藏感",
-        score: ["A", "礼盒包装，适合节日海报和品牌赠礼。"]
+        style: "产品详情页视觉，商业信息图，电商卖点解析，新中式品牌详情图",
+        texture: "高清产品材质，微距细节，纸张压纹，烫金，茶叶纹理，信息标签清晰",
+        light: "真实商业光，细节可见，局部高光，干净投影",
+        mood: "理性、可信、精致、购买决策感、品质说明感",
+        score: ["A", "产品详情图，适合卖点说明、详情页和转化内容。"]
       },
       lifestyle: {
-        label: "茶空间生活方式 / 新中式室内场景",
-        intro: "新中式茶空间生活方式海报，东方茶席室内场景，现代茶生活视觉",
-        core: "画面呈现一个安静的东方茶空间，茶桌、窗景、茶具、植物和人物动作共同营造真实可进入的茶生活场景。",
+        label: "生活图",
+        intro: "茶叶生活方式图，茶空间场景图，适合种草和日常饮茶氛围表达",
+        core: "画面把所选茶叶融入真实生活场景，呈现喝茶、泡茶、送礼、办公室、家居、茶室或户外茶席的使用氛围。",
         elements: {
-          plant: "盆景、竹影、茶枝、插花、窗外树影、庭院植物",
-          scene: "茶室、木质茶桌、格栅窗、庭院、屏风、书架、山水挂画",
-          people: "泡茶人物、品茶人物、茶席主人、安静交谈的访客",
-          object: "茶盘、紫砂壶、盖碗、茶杯、公道杯、茶巾、香炉、茶叶罐"
+          plant: "窗边绿植、竹影、茶枝、插花、庭院植物、季节植物",
+          scene: "茶室、客厅、书桌、办公桌、庭院、露营茶席、窗边自然光",
+          people: "泡茶人物、品茶人物、朋友分享、手部动作、轻松生活状态",
+          object: "茶杯、茶壶、盖碗、茶点、书本、桌面小物、茶叶包装、生活器物"
         },
-        style: "新中式室内设计，生活方式摄影感，东方茶席美学，杂志大片构图",
-        texture: "木纹、陶瓷、亚麻、宣纸、竹编、玻璃、温润自然材质",
-        light: "窗边自然光，柔和侧逆光，空气感，室内低对比阴影，晨昏茶室氛围",
-        mood: "安静、温润、松弛、文人气质、现代东方生活、茶席仪式感",
-        score: ["A", "生活方式，适合茶空间、茶馆和品牌场景。"]
+        style: "生活方式摄影感，新中式茶空间，杂志感构图，东方茶生活视觉",
+        texture: "木纹、陶瓷、亚麻、玻璃、自然植物、温润家居材质",
+        light: "窗边自然光，柔和侧光，空气感，低对比生活场景光",
+        mood: "松弛、自然、温暖、真实、种草感、现代茶生活",
+        score: ["B", "生活图，适合种草、日常内容和茶空间表达。"]
       },
-      songTea: {
-        label: "宋式点茶 / 古典茶席海报",
-        intro: "宋式点茶文化海报，古典东方茶席，宋韵美学视觉",
-        core: "画面围绕宋式点茶展开，茶筅、建盏、茶粉、茶汤泡沫和古典案几构成主体，呈现古代文人茶事与宋韵审美。",
+      bigText: {
+        label: "大字图",
+        intro: "茶叶大字封面图，强标题视觉，适合社媒信息流快速抓取注意力",
+        core: "画面以大标题为第一视觉，所选茶叶产品或茶文化元素作为背景支撑，标题必须清晰、醒目、移动端可读。",
         elements: {
-          plant: "梅枝、竹影、松枝、茶树枝、淡雅插花",
-          scene: "宋式书房、屏风、案几、卷轴、窗棂、山水庭院",
-          people: "点茶人物、文人雅士、执盏人物、侍茶人物",
-          object: "建盏、茶筅、茶粉、茶勺、茶碗、卷轴、古籍、香炉"
+          plant: "茶叶纹理、茶芽、茶山、茶汤色块、植物背景纹理",
+          scene: "大面积留白、纯色背景、茶席局部、虚化茶山、标题安全区",
+          people: "可少量加入手部或人物剪影，不能干扰标题识别",
+          object: "大标题文字、短副标题、茶叶产品、茶杯、标签、箭头或强调符号"
         },
-        style: "宋代美学，古典东方绘画，文人茶席，工笔淡彩，古画质感",
-        texture: "绢本纹理、宣纸肌理、陶盏黑釉、茶沫细腻泡沫、古籍纸张",
-        light: "柔和室内天光，古画式低对比光影，淡雅空气感",
-        mood: "古雅、清寂、文人气、仪式感、宋韵、含蓄高级",
-        score: ["B", "古典茶席，适合宋式点茶与文化海报。"]
+        style: "社媒大字封面，极简商业海报，强标题排版，现代新中式视觉",
+        texture: "清晰字体边缘，干净背景，少量纸张或茶叶纹理，印刷级文字质感",
+        light: "均匀柔光，标题对比强，主体识别清楚",
+        mood: "直接、有力、清晰、适合点击、信息流友好",
+        score: ["A", "大字图，适合标题党封面、课程封面和强观点内容。"]
       },
-      vintagePage: {
-        label: "复古书页 / 茶叶档案卡",
-        intro: "复古茶叶档案卡，旧书页百科设计，博物馆藏品说明视觉",
-        core: "画面像一页旧书中的茶叶档案，包含茶叶标本、产地地图、编号标签、手写注释、风味描述和制茶工艺小图。",
+      pk: {
+        label: "PK图",
+        intro: "茶叶PK对比图，选购对比信息图，适合不同茶叶、价格、工艺或口感差异展示",
+        core: "画面采用左右对比或上下对比结构，清晰比较所选茶叶与另一款茶、不同等级、不同工艺或不同饮用场景，突出差异和结论。",
         elements: {
-          plant: "压制茶叶标本、茶树枝、茶花、茶芽结构、植物切片",
-          scene: "旧书页、牛皮纸、档案夹、手写标签、产地地图、复古边框",
-          people: "少量手绘采茶人物或制茶人物小插图",
-          object: "标本贴纸、放大镜、墨水笔、邮票、编号章、茶汤色卡、风味卡"
+          plant: "两组茶叶干茶、鲜叶、茶汤、茶树或产地元素对比",
+          scene: "左右分屏、对比表格、优缺点标签、VS 标识、结论区、参数对照",
+          people: "可加入品茶人物或手部冲泡对比，但不影响表格阅读",
+          object: "两个茶杯、两组干茶、价格标签、风味雷达、评分条、勾叉符号、对比箭头"
         },
-        style: "复古档案卡，博物馆标本页，自然科学手稿，手写笔记风，旧书排版",
-        texture: "泛黄纸张、折痕、水痕、钢笔线稿、胶带贴纸、旧印刷颗粒",
-        light: "平面柔光，旧纸纹理光感，低对比阴影，手稿扫描质感",
-        mood: "学术、怀旧、自然、收藏感、知识感、手作感",
-        score: ["B", "复古档案，适合茶叶百科和内容封面。"]
-      },
-      threeD: {
-        label: "3D微缩茶山 / 纸艺立体场景",
-        intro: "3D微缩茶山视觉，纸艺立体茶文化场景，高级模型感海报",
-        core: "画面构建一个微缩茶山模型，层叠山体、茶园梯田、茶具和茶叶产品融合在同一个精致立体空间中。",
-        elements: {
-          plant: "茶树阵列、微缩茶园、竹林、山间植被、白色花枝",
-          scene: "层叠茶山、云雾、亭台、曲桥、微缩村落、纸艺山水",
-          people: "采茶小人、游山人物、茶席人物、微缩行旅人物",
-          object: "茶罐、茶杯、盖碗、茶叶堆、茶盘、包装盒、微缩道具"
-        },
-        style: "3D微缩景观，纸艺立体插画，浅浮雕商业视觉，东方茶山模型",
-        texture: "磨砂纸艺、细腻模型材质、陶瓷、透明玻璃、柔和塑形阴影",
-        light: "柔和全局光，浅景深，微缩模型光影，空气透视，低对比阴影",
-        mood: "精致、奇境、东方、可爱但高级、商业展示感",
-        score: ["A", "3D微缩，适合高端品牌KV和创意主图。"]
-      },
-      seasonal: {
-        label: "节气茶海报 / 东方插画",
-        intro: "中国节气茶文化海报，东方季节插画，新中式自然美学",
-        core: "画面把茶叶与节气物候结合，通过季节植物、天气、茶席和产地场景表现不同节令的饮茶意境。",
-        elements: {
-          plant: "春芽、荷叶、桂花、菊花、梅枝、竹叶、松枝、节气植物",
-          scene: "春雨茶山、夏日庭院、秋日桂香、冬日围炉、山水云雾",
-          people: "采茶人物、庭院品茶人物、围炉煮茶人物、节气行人",
-          object: "茶壶、茶杯、盖碗、茶点、围炉、花枝、节气题签"
-        },
-        style: "东方节气插画，新中式自然海报，水彩淡彩，国风留白，文旅视觉",
-        texture: "宣纸、水彩、淡彩颗粒、纸张纤维、柔和手绘笔触",
-        light: "季节自然光，春日薄雾、夏日清光、秋日暖光、冬日炉火柔光",
-        mood: "季节感、诗意、清新、温暖、东方自然、生活仪式感",
-        score: ["B", "节气插画，适合内容营销和茶文化海报。"]
+        style: "对比信息图，社媒PK封面，清晰分屏排版，商业测评视觉",
+        texture: "清晰图标，干净表格，产品细节真实，文字边缘锐利",
+        light: "均匀光线，左右视觉平衡，对比区域清楚",
+        mood: "理性、清晰、测评感、决策感、强结论",
+        score: ["B", "PK图，适合茶叶测评、选购对比和卖点竞争。"]
       }
     };
 
@@ -1117,7 +1056,7 @@
     ];
 
     const corePresets = [
-      { label: "跟随图片类型", value: "auto" },
+      { label: "跟随内容类型", value: "auto" },
       { label: "产品品牌主视觉", value: "画面以茶叶产品为主体，结合产地山水、茶园、东方建筑、茶具与植物，形成高级东方品牌主视觉。" },
       { label: "茶叶百科图鉴", value: "画面围绕茶叶品类展开，以干茶、茶汤和茶树结构为核心，四周解析产地、工艺、香气、风味和冲泡方式。" },
       { label: "茶汤化山水", value: "茶汤从茶壶或茶杯中流出，逐渐化为山峦、河流、瀑布、亭台和茶山，形成茶即山水的东方意境。" },
@@ -1129,7 +1068,7 @@
 
     const elementPresets = {
       plant: [
-        { label: "跟随图片类型", value: "auto" },
+        { label: "跟随内容类型", value: "auto" },
         { label: "江南茶园植物", value: "龙井茶树、柳树、白色花枝、竹林、湖岸园林植被" },
         { label: "植物学结构", value: "茶树枝、鲜叶、茶芽、白毫、茶花、植物切片、根茎结构" },
         { label: "山野茶林", value: "古茶树、竹林、山间植被、苔藓、野花、云雾林木" },
@@ -1137,7 +1076,7 @@
         { label: "极简点缀", value: "少量茶枝、单枝插花、竹叶、干净植物剪影、留白植物装饰" }
       ],
       scene: [
-        { label: "跟随图片类型", value: "auto" },
+        { label: "跟随内容类型", value: "auto" },
         { label: "江南山水", value: "西湖湖面、茶山梯田、曲桥、湖心亭、白墙灰瓦建筑、远山薄雾" },
         { label: "旧纸图鉴", value: "泛黄旧纸、产地区域图、山水剖面、复古边框、手写标签" },
         { label: "茶空间", value: "茶室、木质茶桌、格栅窗、庭院、屏风、书架、山水挂画" },
@@ -1146,7 +1085,7 @@
         { label: "产品棚拍", value: "浅色影棚台面、东方茶席、木质桌面、柔和背景、干净留白" }
       ],
       people: [
-        { label: "跟随图片类型", value: "auto" },
+        { label: "跟随内容类型", value: "auto" },
         { label: "采茶与游人", value: "采茶人物、湖面游船人物、园林行人、茶山小人物" },
         { label: "制茶工艺人物", value: "手工揉捻人物、杀青动作、发酵工艺人物、制茶匠人" },
         { label: "茶空间人物", value: "泡茶人物、品茶人物、茶席主人、安静交谈的访客" },
@@ -1154,7 +1093,7 @@
         { label: "无人物", value: "无人物，突出茶叶、茶具、产品和空间氛围" }
       ],
       object: [
-        { label: "跟随图片类型", value: "auto" },
+        { label: "跟随内容类型", value: "auto" },
         { label: "商业产品茶具", value: "茶叶罐、茶盒、透明玻璃茶杯、白瓷盖碗、竹编茶盘、茶匙" },
         { label: "百科信息模块", value: "放大镜、干茶、茶汤玻璃杯、风味雷达图、制茶流程、冲泡参数、温度计" },
         { label: "古典茶席器物", value: "建盏、茶筅、茶粉、茶勺、茶碗、卷轴、古籍、香炉" },
@@ -1174,7 +1113,7 @@
     ];
 
     const texturePresets = [
-      { label: "跟随图片类型", value: "auto" },
+      { label: "跟随内容类型", value: "auto" },
       { label: "纸雕压纹", value: "手工纸雕层叠质感，压纹纸张肌理，浅浮雕阴影，高级印刷触感" },
       { label: "旧纸水彩", value: "泛黄旧纸纹理，钢笔线稿质感，手绘水彩渲染，复古印刷感" },
       { label: "宣纸水墨", value: "宣纸肌理，水墨晕染感，水彩扩散边缘，柔和颗粒感，手绘笔触" },
@@ -1184,7 +1123,7 @@
     ];
 
     const lightPresets = [
-      { label: "跟随图片类型", value: "auto" },
+      { label: "跟随内容类型", value: "auto" },
       { label: "春日柔光", value: "柔和漫射光，春日上午柔光，低对比空气感，薄雾氛围，空气透视" },
       { label: "平面图鉴光", value: "平面柔光，无明显光源，低对比自然光，手绘阴影，水彩叠色层次" },
       { label: "水墨雾化光", value: "柔和漫射光，无明显光源，水彩晕染式光影，留白过渡，边缘虚化" },
@@ -1204,7 +1143,7 @@
     ];
 
     const moodPresets = [
-      { label: "跟随图片类型", value: "auto" },
+      { label: "跟随内容类型", value: "auto" },
       { label: "东方品牌感", value: "东方雅致，文人茶意，宁静温润，高级东方品牌感，春日清新，茶文化仪式感" },
       { label: "博物学知识感", value: "安静自然，博物学气息，茶文化知识感，东方草本美学，学术图鉴感" },
       { label: "禅意山水", value: "空灵，宁静，禅意，东方诗意，文人气质，山水意境，茶道哲学感" },
@@ -1217,10 +1156,6 @@
       minimal: "避免：高饱和荧光色、赛博朋克、杂乱背景、文字乱码、噪点、边缘模糊。",
       balanced: "避免：高饱和荧光色、赛博朋克、强烈硬光、杂乱背景、低端电商风、粗糙笔触、扁平卡通、过度摄影棚风格、产品比例失衡、文字乱码、建筑透视错误、现代UI界面感、3D塑料感、噪点、边缘模糊。",
       strict: "避免：高饱和荧光色、赛博朋克、强烈硬光、杂乱背景、低端电商风、粗糙笔触、扁平卡通、低幼插画、过度摄影棚风格、产品比例失衡、文字乱码、建筑透视错误、现代UI界面感、乱码标签、模糊线稿、AI随机解剖错误、信息排版杂乱、3D塑料感、廉价贴图感、噪点、边缘模糊。"
-    };
-
-    const state = {
-      format: "竖版海报，适合小红书、广告KV、电商主视觉"
     };
 
     const $ = (id) => document.getElementById(id);
@@ -1243,6 +1178,10 @@
       return item.value === "auto" ? fallback : item.value;
     }
 
+    function selectedPlatform() {
+      return platformTypes[$("platformType").value];
+    }
+
     function selectedType() {
       return visualTypes[$("visualType").value];
     }
@@ -1259,6 +1198,7 @@
     }
 
     function buildPrompt() {
+      const platform = selectedPlatform();
       const type = selectedType();
       const tea = selectedTea();
       const scene = $("scene").value.trim() || tea.scene || "东方茶文化场景";
@@ -1278,10 +1218,15 @@
       const light = presetValue("lightPreset", lightPresets, type.light);
       const palette = presetValue("palettePreset", palettePresets, tea.palette);
       const mood = presetValue("moodPreset", moodPresets, type.mood);
-      const intro = `${tea.label}${type.intro}`;
+      const intro = `${tea.label}${type.intro}，${platform.label}平台视觉`;
       const coreWithTea = core.replaceAll("所选茶叶", tea.label).replaceAll("茶叶品类", tea.label);
 
       return `${intro}，${scene}，低饱和东方美学。
+
+平台判断：
+${platform.format}。
+${platform.rhythm}。
+${platform.text}。
 
 核心画面：
 ${coreWithTea}
@@ -1305,7 +1250,7 @@ ${people}
 ${objects}
 
 整体构图：
-${state.format}，
+${platform.format}，
 ${composition}。
 
 画面结构：
@@ -1340,9 +1285,10 @@ ${negative}`;
     }
 
     function renderScore() {
-      const [letter, text] = selectedType().score;
+      const [letter, text] = selectedPlatform().score;
+      const [, typeText] = selectedType().score;
       $("scoreType").textContent = letter;
-      $("scoreText").textContent = text;
+      $("scoreText").textContent = `${text} 当前内容类型：${typeText}`;
     }
 
     function generate() {
@@ -1374,6 +1320,7 @@ ${negative}`;
     }
 
     function init() {
+      fillSelect($("platformType"), platformTypes);
       fillSelect($("visualType"), visualTypes);
       fillSelect($("teaType"), teaTypes);
       fillArraySelect($("corePreset"), corePresets);
@@ -1388,16 +1335,10 @@ ${negative}`;
       fillArraySelect($("lightPreset"), lightPresets);
       fillArraySelect($("palettePreset"), palettePresets);
       fillArraySelect($("moodPreset"), moodPresets);
+      $("platformType").value = "xiaohongshu";
+      $("visualType").value = "product";
 
-      document.querySelectorAll("#format button").forEach((button) => {
-        button.addEventListener("click", () => {
-          document.querySelectorAll("#format button").forEach((b) => b.classList.remove("active"));
-          button.classList.add("active");
-          state.format = button.dataset.value;
-          generate();
-        });
-      });
-
+      $("platformType").addEventListener("change", generate);
       $("visualType").addEventListener("change", generate);
       $("teaType").addEventListener("change", () => {
         syncTeaDefaults();
@@ -1416,10 +1357,9 @@ ${negative}`;
 
       $("copyBtn").addEventListener("click", copyPrompt);
       $("resetBtn").addEventListener("click", () => {
-        $("visualType").value = "commercial";
+        $("platformType").value = "xiaohongshu";
+        $("visualType").value = "product";
         $("teaType").value = "longjing";
-        state.format = "竖版海报，适合小红书、广告KV、电商主视觉";
-        document.querySelectorAll("#format button").forEach((b, index) => b.classList.toggle("active", index === 0));
         [
           "corePreset", "plantPreset", "scenePreset", "peoplePreset", "objectPreset",
           "compositionSelect", "spacePreset", "styleSelect", "texturePreset",
