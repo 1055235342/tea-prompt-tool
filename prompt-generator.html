@@ -628,6 +628,7 @@
           <div class="field">
             <label for="detailLevel">细节强度</label>
             <select id="detailLevel">
+              <option value="">不指定</option>
               <option value="克制干净，留白充足，细节精致但不拥挤">克制干净</option>
               <option value="层次丰富，细节充足，商业广告级精度">层次丰富</option>
               <option value="超精细细节，8K，印刷级细节，复杂但有序">超精细</option>
@@ -636,6 +637,7 @@
           <div class="field">
             <label for="negativeMode">负面词</label>
             <select id="negativeMode">
+              <option value="">不指定</option>
               <option value="balanced">通用 + 类型约束</option>
               <option value="strict">严格商业级约束</option>
               <option value="minimal">简洁约束</option>
@@ -1209,17 +1211,18 @@
     const $ = (id) => document.getElementById(id);
 
     function fillSelect(select, data) {
-      select.innerHTML = Object.entries(data).map(([key, value]) => `<option value="${key}">${value.label}</option>`).join("");
+      select.innerHTML = `<option value="">不指定</option>` + Object.entries(data).map(([key, value]) => `<option value="${key}">${value.label}</option>`).join("");
     }
 
     function fillArraySelect(select, items) {
-      select.innerHTML = items.map((item, index) => {
+      select.innerHTML = `<option value="">不指定</option>` + items.map((item, index) => {
         const label = typeof item === "string" ? item : item.label;
         return `<option value="${index}">${label}</option>`;
       }).join("");
     }
 
     function presetValue(selectId, items, fallback) {
+      if ($(selectId).value === "") return fallback;
       const item = items[Number($(selectId).value)];
       if (!item) return fallback;
       if (typeof item === "string") return item;
@@ -1227,16 +1230,37 @@
     }
 
     function selectedPlatform() {
-      return platformTypes[$("platformType").value];
+      return platformTypes[$("platformType").value] || {
+        label: "通用平台",
+        format: "不指定发布平台，由用户文案和实际使用场景决定画幅、标题安全区和版式节奏",
+        rhythm: "平台语气不做强绑定，保持清晰、自然、适合茶叶内容传播",
+        text: "文字密度根据用户是否填写文案决定，未填写则减少随机文字",
+        score: ["-", "未指定平台，按通用茶叶视觉生成。"]
+      };
     }
 
     function selectedType() {
-      return visualTypes[$("visualType").value];
+      return visualTypes[$("visualType").value] || {
+        label: "通用内容",
+        intro: "茶叶主题视觉，适合根据用户文案自由生成茶文化图片",
+        core: "画面围绕所选茶叶或用户文案中的茶叶主体展开，重点表现茶叶、茶汤、茶具、茶空间或品牌内容，整体清晰自然。",
+        elements: {
+          plant: "茶树、茶叶、茶芽、自然植物点缀",
+          scene: "茶文化场景、茶席、茶空间、产地或用户文案指定背景",
+          people: "可根据需要加入泡茶、品茶、采茶或生活方式人物",
+          object: "茶叶产品、茶汤、干茶、茶具、标题文案或用户指定元素"
+        },
+        style: "茶叶主题视觉，东方美学，干净清晰，适合通用社媒和品牌内容",
+        texture: "自然材质、茶叶细节、纸张或陶瓷质感，画面干净",
+        light: "柔和自然光，低对比，主体清晰",
+        mood: "自然、清晰、茶文化感、温润、可信",
+        score: ["-", "未指定内容类型，按通用茶叶视觉生成。"]
+      };
     }
 
     function selectedTea() {
       const tea = teaTypes[$("teaType").value] || teaTypes.custom;
-      if ($("teaType").value !== "custom") return tea;
+      if ($("teaType").value && $("teaType").value !== "custom") return tea;
       const customName = $("customTeaName").value.trim();
       return {
         ...tea,
@@ -1253,7 +1277,7 @@
     }
 
     function updateTeaFields() {
-      $("customTeaField").hidden = $("teaType").value !== "custom";
+      $("customTeaField").hidden = $("teaType").value !== "" && $("teaType").value !== "custom";
     }
 
     function buildPrompt() {
@@ -1269,8 +1293,8 @@
       const imageMode = $("imageMode").value;
       const imageDescription = $("imageDescription").value.trim();
       const editInstruction = $("editInstruction").value.trim();
-      const detail = $("detailLevel").value;
-      const negative = negativeSets[$("negativeMode").value];
+      const detail = $("detailLevel").value || "不指定细节强度，保持画面清晰、干净、主体明确";
+      const negative = $("negativeMode").value ? negativeSets[$("negativeMode").value] : "避免：文字乱码、无关茶名、主体混乱、低清晰度、明显比例错误。";
       const core = presetValue("corePreset", corePresets, type.core);
       const plant = presetValue("plantPreset", elementPresets.plant, type.elements.plant);
       const sceneElements = presetValue("scenePreset", elementPresets.scene, type.elements.scene);
@@ -1283,11 +1307,11 @@
       const light = presetValue("lightPreset", lightPresets, type.light);
       const palette = presetValue("palettePreset", palettePresets, tea.palette);
       const mood = presetValue("moodPreset", moodPresets, type.mood);
-      const teaNaming = $("teaType").value === "custom"
+      const teaNaming = $("teaType").value === "" || $("teaType").value === "custom"
         ? `茶叶品类由用户自定义：${tea.label}，不要自行替换成西湖龙井、碧螺春、祁门红茶等固定茶名`
         : `茶叶品类：${tea.label}`;
       const introSubject = tea.label === "茶叶" ? type.intro : `${tea.label}${type.intro}`;
-      const intro = `${introSubject}，${platform.label}平台视觉`;
+      const intro = `${introSubject}，${platform.label}视觉`;
       const coreWithTea = core.replaceAll("所选茶叶", tea.label).replaceAll("茶叶品类", tea.label);
       const copyBlock = copyMode === "custom" ? `
 文案要求：
@@ -1426,9 +1450,9 @@ ${negative}`;
       fillArraySelect($("lightPreset"), lightPresets);
       fillArraySelect($("palettePreset"), palettePresets);
       fillArraySelect($("moodPreset"), moodPresets);
-      $("platformType").value = "xiaohongshu";
-      $("visualType").value = "product";
-      $("teaType").value = "custom";
+      $("platformType").value = "";
+      $("visualType").value = "";
+      $("teaType").value = "";
 
       $("platformType").addEventListener("change", generate);
       $("visualType").addEventListener("change", generate);
@@ -1461,9 +1485,9 @@ ${negative}`;
 
       $("copyBtn").addEventListener("click", copyPrompt);
       $("resetBtn").addEventListener("click", () => {
-        $("platformType").value = "xiaohongshu";
-        $("visualType").value = "product";
-        $("teaType").value = "custom";
+        $("platformType").value = "";
+        $("visualType").value = "";
+        $("teaType").value = "";
         $("customTeaName").value = "";
         $("copyMode").value = "none";
         $("customCopy").value = "";
@@ -1475,9 +1499,9 @@ ${negative}`;
           "corePreset", "plantPreset", "scenePreset", "peoplePreset", "objectPreset",
           "compositionSelect", "spacePreset", "styleSelect", "texturePreset",
           "lightPreset", "palettePreset", "moodPreset"
-        ].forEach((id) => { $(id).value = "0"; });
-        $("detailLevel").value = "克制干净，留白充足，细节精致但不拥挤";
-        $("negativeMode").value = "balanced";
+        ].forEach((id) => { $(id).value = ""; });
+        $("detailLevel").value = "";
+        $("negativeMode").value = "";
         updateTeaFields();
         syncTeaDefaults();
         updateConditionalFields();
