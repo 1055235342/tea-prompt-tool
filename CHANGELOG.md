@@ -2,6 +2,7 @@
 
 ## 2026-05-27
 
+- 将导航页改为左侧工具列表、右侧功能详情的双栏结构
 - 将导航首页扩展为多工具入口
 - 新增 ChatGPT、Gemini、豆包、Claude、Kimi、DeepSeek、即梦 AI、Midjourney、LiblibAI 等外部工具跳转
 - 新增导航首页 `index.html`
