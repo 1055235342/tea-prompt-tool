@@ -6,16 +6,16 @@
   <title>茶叶 AI 工具导航</title>
   <style>
     :root {
-      --bg: #f6f0e5;
-      --panel: #fffaf0;
-      --ink: #1f3027;
-      --muted: #69766a;
-      --line: #d8cbb5;
-      --green: #4c7a58;
-      --amber: #bd8337;
-      --dark: #17231c;
-      --white: #fffaf0;
-      --shadow: 0 18px 50px rgba(40, 49, 36, 0.11);
+      --bg: #f4f6f3;
+      --panel: #ffffff;
+      --ink: #15231c;
+      --muted: #65736b;
+      --line: #dbe2dc;
+      --green: #2f6b4f;
+      --green-soft: #e7f0ea;
+      --dark: #0f1d17;
+      --white: #ffffff;
+      --shadow: 0 18px 48px rgba(15, 29, 23, 0.10);
     }
 
     * { box-sizing: border-box; }
@@ -26,10 +26,7 @@
       color: var(--ink);
       font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
       letter-spacing: 0;
-      background:
-        radial-gradient(circle at 12% 14%, rgba(155, 183, 131, 0.24), transparent 26%),
-        radial-gradient(circle at 82% 20%, rgba(189, 131, 55, 0.12), transparent 24%),
-        linear-gradient(120deg, #f8f2e7 0%, #f2eadc 58%, #edf1e3 100%);
+      background: linear-gradient(180deg, #f7f8f6 0%, #eef3ef 100%);
     }
 
     button, a { font: inherit; }
@@ -42,14 +39,14 @@
     }
 
     header {
-      padding: 24px clamp(22px, 5vw, 72px);
+      padding: 20px clamp(20px, 4vw, 56px);
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 18px;
-      border-bottom: 1px solid rgba(216, 203, 181, 0.72);
-      background: rgba(255, 250, 240, 0.62);
-      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(16px);
     }
 
     .brand {
@@ -70,7 +67,7 @@
       position: absolute;
       inset: 8px 2px 10px;
       border-radius: 50% 0 50% 0;
-      background: var(--green);
+      background: var(--dark);
       transform: rotate(-18deg);
     }
 
@@ -81,7 +78,7 @@
       top: 21px;
       width: 25px;
       height: 2px;
-      background: #dfe9d5;
+      background: #d8eadf;
       transform: rotate(-18deg);
     }
 
@@ -103,21 +100,21 @@
       font-weight: 750;
       padding: 8px 12px;
       border: 1px solid rgba(76, 122, 88, 0.28);
-      background: rgba(255, 250, 240, 0.72);
+      background: var(--green-soft);
       border-radius: 999px;
       white-space: nowrap;
     }
 
     main {
-      width: min(1180px, calc(100% - 44px));
+      width: min(1200px, calc(100% - 40px));
       margin: 0 auto;
-      padding: 34px 0 48px;
+      padding: 32px 0 46px;
     }
 
     .hero {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(280px, 390px);
-      gap: clamp(24px, 5vw, 64px);
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 32px;
       align-items: end;
       margin-bottom: 28px;
     }
@@ -141,8 +138,8 @@
 
     .hero h2 {
       margin: 0;
-      font-size: clamp(38px, 6vw, 64px);
-      line-height: 1.05;
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 1.08;
       max-width: 760px;
     }
 
@@ -150,16 +147,16 @@
       margin: 20px 0 0;
       max-width: 680px;
       color: var(--muted);
-      font-size: 17px;
-      line-height: 1.75;
+      font-size: 16px;
+      line-height: 1.7;
     }
 
     .workflow {
-      background: rgba(255, 250, 240, 0.72);
+      background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 20px;
-      box-shadow: 0 12px 34px rgba(40, 49, 36, 0.07);
+      box-shadow: 0 12px 28px rgba(15, 29, 23, 0.06);
     }
 
     .workflow strong {
@@ -177,27 +174,27 @@
 
     .tool-shell {
       display: grid;
-      grid-template-columns: 330px minmax(0, 1fr);
-      gap: 18px;
+      grid-template-columns: 332px minmax(0, 1fr);
+      gap: 20px;
       align-items: stretch;
-      border-top: 1px solid rgba(216, 203, 181, 0.72);
+      border-top: 1px solid var(--line);
       padding-top: 24px;
     }
 
     .tool-nav {
-      background: rgba(255, 250, 240, 0.76);
+      background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 8px;
       box-shadow: var(--shadow);
-      padding: 16px;
-      max-height: 680px;
+      padding: 14px;
+      max-height: 690px;
       overflow: auto;
     }
 
     .nav-section + .nav-section {
       margin-top: 18px;
       padding-top: 16px;
-      border-top: 1px solid rgba(216, 203, 181, 0.72);
+      border-top: 1px solid var(--line);
     }
 
     .nav-title {
@@ -214,7 +211,7 @@
       text-align: left;
       color: var(--ink);
       border-radius: 8px;
-      padding: 12px;
+      padding: 12px 13px;
       cursor: pointer;
       display: grid;
       gap: 5px;
@@ -234,14 +231,14 @@
     }
 
     .tool-button.active {
-      border-color: rgba(76, 122, 88, 0.30);
-      background: rgba(76, 122, 88, 0.12);
+      border-color: rgba(47, 107, 79, 0.28);
+      background: var(--green-soft);
     }
 
     .detail-panel {
       position: relative;
       overflow: hidden;
-      background: rgba(255, 250, 240, 0.84);
+      background: var(--panel);
       border: 1px solid var(--line);
       border-radius: 8px;
       box-shadow: var(--shadow);
@@ -251,28 +248,13 @@
       grid-template-rows: auto 1fr auto;
     }
 
-    .detail-panel::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(90deg, rgba(76, 122, 88, 0.08), transparent 35%),
-        linear-gradient(180deg, transparent, rgba(189, 131, 55, 0.08));
-      pointer-events: none;
-    }
-
-    .detail-panel > * {
-      position: relative;
-      z-index: 1;
-    }
-
     .detail-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       gap: 18px;
       padding-bottom: 20px;
-      border-bottom: 1px solid rgba(216, 203, 181, 0.72);
+      border-bottom: 1px solid var(--line);
     }
 
     .detail-title h3 {
@@ -290,7 +272,7 @@
     }
 
     .badge {
-      color: var(--white);
+      color: white;
       background: var(--green);
       border-radius: 999px;
       padding: 7px 10px;
@@ -307,8 +289,8 @@
     }
 
     .info-block {
-      background: rgba(255, 255, 255, 0.42);
-      border: 1px solid rgba(216, 203, 181, 0.72);
+      background: #f8faf8;
+      border: 1px solid var(--line);
       border-radius: 8px;
       padding: 18px;
     }
@@ -358,11 +340,11 @@
       flex-wrap: wrap;
       gap: 12px;
       align-items: center;
-      border-top: 1px solid rgba(216, 203, 181, 0.72);
+      border-top: 1px solid var(--line);
       padding-top: 20px;
     }
 
-    .open-link, .secondary-link {
+    .open-link {
       min-height: 46px;
       padding: 12px 18px;
       border-radius: 8px;
@@ -370,28 +352,23 @@
       align-items: center;
       justify-content: center;
       font-weight: 850;
-      border: 1px solid var(--line);
+      border: 1px solid var(--dark);
     }
 
     .open-link {
       background: var(--dark);
-      color: #fff4dc;
-      border-color: var(--dark);
-    }
-
-    .secondary-link {
-      background: rgba(255, 255, 255, 0.48);
+      color: white;
     }
 
     footer {
       padding: 22px clamp(22px, 5vw, 72px);
       color: var(--muted);
       font-size: 13px;
-      border-top: 1px solid rgba(216, 203, 181, 0.72);
-      background: rgba(255, 250, 240, 0.48);
+      border-top: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.72);
     }
 
-    @media (max-width: 920px) {
+    @media (max-width: 1024px) {
       header {
         align-items: flex-start;
         flex-direction: column;
@@ -406,11 +383,81 @@
       .tool-nav {
         max-height: none;
       }
+
+      .tool-nav {
+        display: flex;
+        gap: 14px;
+        overflow-x: auto;
+        padding: 12px;
+      }
+
+      .nav-section {
+        min-width: 260px;
+      }
+
+      .nav-section + .nav-section {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+      }
     }
 
-    @media (max-width: 560px) {
+    @media (max-width: 640px) {
+      header {
+        padding: 18px;
+      }
+
+      main {
+        width: calc(100% - 28px);
+        padding-top: 24px;
+      }
+
+      .hero h2 {
+        font-size: 36px;
+      }
+
+      .workflow {
+        padding: 16px;
+      }
+
+      .detail-panel {
+        min-height: auto;
+        padding: 18px;
+      }
+
       .detail-top {
         flex-direction: column;
+      }
+
+      .detail-title h3 {
+        font-size: 30px;
+      }
+
+      .tool-nav {
+        display: block;
+        max-height: 360px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        margin-left: 0;
+        margin-right: 0;
+      }
+
+      .nav-section {
+        min-width: 0;
+      }
+
+      .nav-section + .nav-section {
+        margin-top: 14px;
+        padding-top: 14px;
+        border-top: 1px solid var(--line);
+      }
+
+      .tool-button {
+        padding: 11px 12px;
+      }
+
+      .tool-button strong {
+        font-size: 15px;
       }
     }
   </style>
@@ -466,7 +513,6 @@
 
           <div class="detail-actions">
             <a class="open-link" id="detailLink" href="#">打开工具</a>
-            <a class="secondary-link" href="https://github.com/1055235342/tea-prompt-tool" target="_blank" rel="noreferrer">查看项目代码</a>
           </div>
         </article>
       </section>
