@@ -489,6 +489,10 @@
             <label for="teaType">茶叶品类</label>
             <select id="teaType"></select>
           </div>
+          <div class="field" id="customTeaField" hidden>
+            <label for="customTeaName">自定义茶名 / 不确定可留空</label>
+            <input id="customTeaName" placeholder="如：春茶、公司自有茶、用户文案中的茶名">
+          </div>
         </div>
       </details>
 
@@ -1058,12 +1062,12 @@
         extras: "茶筅、抹茶碗、抹茶粉、泡沫纹理、木匙、极简茶席"
       },
       custom: {
-        label: "自定义茶类",
-        scene: "",
-        product: "",
-        colors: ["#f6f0e5", "#9bb783", "#4c7a58", "#bd8337", "#69766a", "#fffaf0"],
-        palette: "低饱和茶绿色、米白、雾灰绿、浅卡其、淡墨灰",
-        extras: ""
+        label: "自定义 / 不指定茶叶品类",
+        scene: "东方茶文化场景，可根据用户文案自定义产地、场景和品牌语境",
+        product: "茶叶产品、茶汤、干茶、茶具或用户文案中指定的茶叶主体",
+        colors: ["#f6f0e5", "#9bb783", "#4c7a58", "#e7ead9", "#69766a", "#ffffff"],
+        palette: "通用茶文化自然色系、米白、茶绿、雾灰绿、象牙白",
+        extras: "茶叶、茶汤、茶具、茶树、茶空间、品牌文案元素"
       }
     };
 
@@ -1231,7 +1235,14 @@
     }
 
     function selectedTea() {
-      return teaTypes[$("teaType").value];
+      const tea = teaTypes[$("teaType").value] || teaTypes.custom;
+      if ($("teaType").value !== "custom") return tea;
+      const customName = $("customTeaName").value.trim();
+      return {
+        ...tea,
+        label: customName || "茶叶",
+        product: customName ? `${customName}茶叶主体、茶汤、干茶、茶具或用户文案中指定的产品` : tea.product
+      };
     }
 
     function syncTeaDefaults() {
@@ -1239,6 +1250,10 @@
       $("scene").value = tea.scene;
       $("product").value = tea.product;
       $("extraElements").value = tea.extras;
+    }
+
+    function updateTeaFields() {
+      $("customTeaField").hidden = $("teaType").value !== "custom";
     }
 
     function buildPrompt() {
@@ -1268,7 +1283,11 @@
       const light = presetValue("lightPreset", lightPresets, type.light);
       const palette = presetValue("palettePreset", palettePresets, tea.palette);
       const mood = presetValue("moodPreset", moodPresets, type.mood);
-      const intro = `${tea.label}${type.intro}，${platform.label}平台视觉`;
+      const teaNaming = $("teaType").value === "custom"
+        ? `茶叶品类由用户自定义：${tea.label}，不要自行替换成西湖龙井、碧螺春、祁门红茶等固定茶名`
+        : `茶叶品类：${tea.label}`;
+      const introSubject = tea.label === "茶叶" ? type.intro : `${tea.label}${type.intro}`;
+      const intro = `${introSubject}，${platform.label}平台视觉`;
       const coreWithTea = core.replaceAll("所选茶叶", tea.label).replaceAll("茶叶品类", tea.label);
       const copyBlock = copyMode === "custom" ? `
 文案要求：
@@ -1289,6 +1308,9 @@
 ${platform.format}。
 ${platform.rhythm}。
 ${platform.text}。
+
+茶叶品类判断：
+${teaNaming}。
 ${imageBlock}
 ${copyBlock}
 
@@ -1406,9 +1428,14 @@ ${negative}`;
       fillArraySelect($("moodPreset"), moodPresets);
       $("platformType").value = "xiaohongshu";
       $("visualType").value = "product";
+      $("teaType").value = "custom";
 
       $("platformType").addEventListener("change", generate);
       $("visualType").addEventListener("change", generate);
+      $("customTeaName").addEventListener("input", () => {
+        syncTeaDefaults();
+        generate();
+      });
       ["copyMode", "imageMode"].forEach((id) => {
         $(id).addEventListener("change", () => {
           updateConditionalFields();
@@ -1416,6 +1443,7 @@ ${negative}`;
         });
       });
       $("teaType").addEventListener("change", () => {
+        updateTeaFields();
         syncTeaDefaults();
         generate();
       });
@@ -1435,7 +1463,8 @@ ${negative}`;
       $("resetBtn").addEventListener("click", () => {
         $("platformType").value = "xiaohongshu";
         $("visualType").value = "product";
-        $("teaType").value = "longjing";
+        $("teaType").value = "custom";
+        $("customTeaName").value = "";
         $("copyMode").value = "none";
         $("customCopy").value = "";
         $("copyPlacement").value = "";
@@ -1449,11 +1478,13 @@ ${negative}`;
         ].forEach((id) => { $(id).value = "0"; });
         $("detailLevel").value = "克制干净，留白充足，细节精致但不拥挤";
         $("negativeMode").value = "balanced";
+        updateTeaFields();
         syncTeaDefaults();
         updateConditionalFields();
         generate();
       });
 
+      updateTeaFields();
       syncTeaDefaults();
       updateConditionalFields();
       generate();
