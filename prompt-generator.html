@@ -190,6 +190,10 @@
       line-height: 1.55;
     }
 
+    [hidden] {
+      display: none !important;
+    }
+
     .compact-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -488,8 +492,48 @@
         </div>
       </details>
 
+      <details class="section" open>
+        <summary><div class="section-title"><span>输入条件</span><span>02</span></div></summary>
+        <div class="section-body">
+          <div class="field">
+            <label for="copyMode">是否写入文案</label>
+            <select id="copyMode">
+              <option value="none">不写入文案</option>
+              <option value="custom">需要写入指定文案</option>
+            </select>
+          </div>
+          <div id="copyFields" hidden>
+            <div class="field">
+              <label for="customCopy">需要写入图片的文案</label>
+              <textarea id="customCopy" placeholder="如：春茶上新 / 西湖龙井 / 明前头采 / 一杯春天的鲜爽"></textarea>
+            </div>
+            <div class="field">
+              <label for="copyPlacement">文案位置与要求</label>
+              <input id="copyPlacement" placeholder="如：顶部大标题，左侧竖排，保留标题安全区，文字清晰不乱码">
+            </div>
+          </div>
+          <div class="field">
+            <label for="imageMode">是否基于已有图片修改</label>
+            <select id="imageMode">
+              <option value="none">没有图片，直接生成新图</option>
+              <option value="edit">有图片，基于当前图片修改</option>
+            </select>
+          </div>
+          <div id="imageFields" hidden>
+            <div class="field">
+              <label for="imageDescription">当前图片内容</label>
+              <textarea id="imageDescription" placeholder="描述当前图片里已有的主体、背景、文字、颜色、构图、问题点"></textarea>
+            </div>
+            <div class="field">
+              <label for="editInstruction">希望修改成什么</label>
+              <textarea id="editInstruction" placeholder="如：保留产品罐和茶杯，改成小红书封面，增加春茶上新文案，背景更干净"></textarea>
+            </div>
+          </div>
+        </div>
+      </details>
+
       <details class="section">
-        <summary><div class="section-title"><span>画面内容</span><span>02</span></div></summary>
+        <summary><div class="section-title"><span>画面内容</span><span>03</span></div></summary>
         <div class="section-body">
           <div class="field">
             <label for="corePreset">核心画面</label>
@@ -511,7 +555,7 @@
       </details>
 
       <details class="section">
-        <summary><div class="section-title"><span>元素控制</span><span>03</span></div></summary>
+        <summary><div class="section-title"><span>元素控制</span><span>04</span></div></summary>
         <div class="section-body">
           <div class="field">
             <label for="plantPreset">植物元素</label>
@@ -533,7 +577,7 @@
       </details>
 
       <details class="section" open>
-        <summary><div class="section-title"><span>构图空间</span><span>04</span></div></summary>
+        <summary><div class="section-title"><span>构图空间</span><span>05</span></div></summary>
         <div class="section-body">
           <div class="field">
             <label for="compositionSelect">构图方式</label>
@@ -547,7 +591,7 @@
       </details>
 
       <details class="section">
-        <summary><div class="section-title"><span>风格控制</span><span>05</span></div></summary>
+        <summary><div class="section-title"><span>风格控制</span><span>06</span></div></summary>
         <div class="section-body">
           <div class="field">
             <label for="styleSelect">风格质感</label>
@@ -575,7 +619,7 @@
       </details>
 
       <details class="section">
-        <summary><div class="section-title"><span>质量约束</span><span>06</span></div></summary>
+        <summary><div class="section-title"><span>质量约束</span><span>07</span></div></summary>
         <div class="section-body">
           <div class="field">
             <label for="detailLevel">细节强度</label>
@@ -1204,6 +1248,12 @@
       const scene = $("scene").value.trim() || tea.scene || "东方茶文化场景";
       const product = $("product").value.trim() || tea.product || `${tea.label}茶叶主体`;
       const extra = $("extraElements").value.trim();
+      const copyMode = $("copyMode").value;
+      const customCopy = $("customCopy").value.trim();
+      const copyPlacement = $("copyPlacement").value.trim();
+      const imageMode = $("imageMode").value;
+      const imageDescription = $("imageDescription").value.trim();
+      const editInstruction = $("editInstruction").value.trim();
       const detail = $("detailLevel").value;
       const negative = negativeSets[$("negativeMode").value];
       const core = presetValue("corePreset", corePresets, type.core);
@@ -1220,6 +1270,18 @@
       const mood = presetValue("moodPreset", moodPresets, type.mood);
       const intro = `${tea.label}${type.intro}，${platform.label}平台视觉`;
       const coreWithTea = core.replaceAll("所选茶叶", tea.label).replaceAll("茶叶品类", tea.label);
+      const copyBlock = copyMode === "custom" ? `
+文案要求：
+画面需要写入用户指定文案：${customCopy || "【用户尚未填写文案，请先补充具体文字】"}。
+文案排版要求：${copyPlacement || "文字清晰可读，避免乱码、错字、随机文字，保留安全边距，与主体画面协调"}。` : "";
+      const imageBlock = imageMode === "edit" ? `
+图片输入判断：
+这是基于已有图片的改图提示词，不是完全从零生成。
+当前图片内容：${imageDescription || "【用户尚未描述当前图片，请补充已有图片的主体、背景、颜色、文字和问题点】"}。
+修改目标：${editInstruction || "【用户尚未填写修改目标，请补充需要保留、替换、增加或删除的内容】"}。
+在保留当前图片核心主体和可用构图的基础上优化画面，只修改用户要求变更的部分，避免无关元素大幅漂移。` : `
+图片输入判断：
+没有参考图，按纯文生图逻辑直接生成新画面。`;
 
       return `${intro}，${scene}，低饱和东方美学。
 
@@ -1227,6 +1289,8 @@
 ${platform.format}。
 ${platform.rhythm}。
 ${platform.text}。
+${imageBlock}
+${copyBlock}
 
 核心画面：
 ${coreWithTea}
@@ -1299,6 +1363,11 @@ ${negative}`;
       renderScore();
     }
 
+    function updateConditionalFields() {
+      $("copyFields").hidden = $("copyMode").value !== "custom";
+      $("imageFields").hidden = $("imageMode").value !== "edit";
+    }
+
     function showToast(text) {
       const toast = $("toast");
       toast.textContent = text;
@@ -1340,11 +1409,18 @@ ${negative}`;
 
       $("platformType").addEventListener("change", generate);
       $("visualType").addEventListener("change", generate);
+      ["copyMode", "imageMode"].forEach((id) => {
+        $(id).addEventListener("change", () => {
+          updateConditionalFields();
+          generate();
+        });
+      });
       $("teaType").addEventListener("change", () => {
         syncTeaDefaults();
         generate();
       });
       [
+        "customCopy", "copyPlacement", "imageDescription", "editInstruction",
         "corePreset", "scene", "product", "extraElements",
         "plantPreset", "scenePreset", "peoplePreset", "objectPreset",
         "compositionSelect", "spacePreset", "styleSelect",
@@ -1360,6 +1436,12 @@ ${negative}`;
         $("platformType").value = "xiaohongshu";
         $("visualType").value = "product";
         $("teaType").value = "longjing";
+        $("copyMode").value = "none";
+        $("customCopy").value = "";
+        $("copyPlacement").value = "";
+        $("imageMode").value = "none";
+        $("imageDescription").value = "";
+        $("editInstruction").value = "";
         [
           "corePreset", "plantPreset", "scenePreset", "peoplePreset", "objectPreset",
           "compositionSelect", "spacePreset", "styleSelect", "texturePreset",
@@ -1368,10 +1450,12 @@ ${negative}`;
         $("detailLevel").value = "克制干净，留白充足，细节精致但不拥挤";
         $("negativeMode").value = "balanced";
         syncTeaDefaults();
+        updateConditionalFields();
         generate();
       });
 
       syncTeaDefaults();
+      updateConditionalFields();
       generate();
     }
 
