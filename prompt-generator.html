@@ -591,6 +591,10 @@
             <label for="spacePreset">画面结构</label>
             <select id="spacePreset"></select>
           </div>
+          <div class="field" id="pkLayoutField" hidden>
+            <label for="pkLayoutSelect">PK图对比结构</label>
+            <select id="pkLayoutSelect"></select>
+          </div>
         </div>
       </details>
 
@@ -1088,6 +1092,17 @@
       "对称仪式感构图，茶具与茶叶沿中轴排布，适合礼盒和古典茶席"
     ];
 
+    const pkLayouts = [
+      "从小到大递进结构：左侧或下方放低等级、低价格、低浓度或入门款，右侧或上方逐步升级到高等级、高价值、进阶款，形成清晰成长路径",
+      "从大到小筛选结构：先展示大范围茶类或大包装，再逐步缩小到核心推荐、精选单品或最终结论，适合选购指南和避坑内容",
+      "金字塔结构：底层展示基础认知或大众款，中层展示进阶差异，顶层展示最优选择或核心结论，层级明确，适合茶叶等级、价格和口感梯度",
+      "左右PK结构：左右两组茶叶或产品并列，中间使用VS标识，适合两个茶类、两个价格带、两种工艺或两款产品直接对比",
+      "上下PK结构：上方展示结论或推荐，下方展示对比依据，适合手机竖版阅读和短视频封面",
+      "表格对比结构：用行列展示香气、汤色、口感、工艺、价格、适合人群等维度，信息清晰，适合知识型PK图",
+      "象限对比结构：用二维坐标比较价格、香气、浓淡、适口度或礼赠感，适合多款茶叶同时对比",
+      "排行榜结构：按推荐度、价格、香气或适合人群排序，形成Top榜单式PK图"
+    ];
+
     const styles = [
       "纸雕层叠插画，浅浮雕视觉，手工纸张肌理",
       "复古植物学插画，钢笔线稿，水彩渲染，旧纸纹理",
@@ -1229,6 +1244,11 @@
       return item.value === "auto" ? fallback : item.value;
     }
 
+    function arrayValue(selectId, items, fallback) {
+      if ($(selectId).value === "") return fallback;
+      return items[Number($(selectId).value)] || fallback;
+    }
+
     function selectedPlatform() {
       return platformTypes[$("platformType").value] || {
         label: "通用平台",
@@ -1300,13 +1320,14 @@
       const sceneElements = presetValue("scenePreset", elementPresets.scene, type.elements.scene);
       const people = presetValue("peoplePreset", elementPresets.people, type.elements.people);
       const objects = presetValue("objectPreset", elementPresets.object, type.elements.object);
-      const composition = compositions[Number($("compositionSelect").value)] || compositions[0];
-      const space = spacePresets[Number($("spacePreset").value)]?.value || spacePresets[0].value;
-      const style = styles[Number($("styleSelect").value)] || styles[0];
+      const composition = arrayValue("compositionSelect", compositions, "不指定固定构图，根据用户文案、平台画幅和主体内容自然组织画面");
+      const space = $("spacePreset").value === "" ? "不指定固定画面结构，根据主体、文案和内容类型自然安排空间层次" : (spacePresets[Number($("spacePreset").value)]?.value || "不指定固定画面结构，根据主体、文案和内容类型自然安排空间层次");
+      const style = arrayValue("styleSelect", styles, "不指定固定风格，保持茶叶主题清晰、自然、干净、有审美");
       const texture = presetValue("texturePreset", texturePresets, type.texture);
       const light = presetValue("lightPreset", lightPresets, type.light);
       const palette = presetValue("palettePreset", palettePresets, tea.palette);
       const mood = presetValue("moodPreset", moodPresets, type.mood);
+      const pkLayout = $("visualType").value === "pk" ? arrayValue("pkLayoutSelect", pkLayouts, "不指定固定PK结构，可根据对比对象自动选择左右PK、上下PK、递进、金字塔、表格、象限或排行榜结构") : "";
       const teaNaming = $("teaType").value === "" || $("teaType").value === "custom"
         ? `茶叶品类由用户自定义：${tea.label}，不要自行替换成西湖龙井、碧螺春、祁门红茶等固定茶名`
         : `茶叶品类：${tea.label}`;
@@ -1362,6 +1383,9 @@ ${objects}
 整体构图：
 ${platform.format}，
 ${composition}。
+${pkLayout ? `
+PK图对比结构：
+${pkLayout}。` : ""}
 
 画面结构：
 ${space}
@@ -1412,6 +1436,7 @@ ${negative}`;
     function updateConditionalFields() {
       $("copyFields").hidden = $("copyMode").value !== "custom";
       $("imageFields").hidden = $("imageMode").value !== "edit";
+      $("pkLayoutField").hidden = $("visualType").value !== "pk";
     }
 
     function showToast(text) {
@@ -1445,6 +1470,7 @@ ${negative}`;
       fillArraySelect($("objectPreset"), elementPresets.object);
       fillArraySelect($("compositionSelect"), compositions);
       fillArraySelect($("spacePreset"), spacePresets);
+      fillArraySelect($("pkLayoutSelect"), pkLayouts);
       fillArraySelect($("styleSelect"), styles);
       fillArraySelect($("texturePreset"), texturePresets);
       fillArraySelect($("lightPreset"), lightPresets);
@@ -1455,7 +1481,10 @@ ${negative}`;
       $("teaType").value = "";
 
       $("platformType").addEventListener("change", generate);
-      $("visualType").addEventListener("change", generate);
+      $("visualType").addEventListener("change", () => {
+        updateConditionalFields();
+        generate();
+      });
       $("customTeaName").addEventListener("input", () => {
         syncTeaDefaults();
         generate();
@@ -1475,7 +1504,7 @@ ${negative}`;
         "customCopy", "copyPlacement", "imageDescription", "editInstruction",
         "corePreset", "scene", "product", "extraElements",
         "plantPreset", "scenePreset", "peoplePreset", "objectPreset",
-        "compositionSelect", "spacePreset", "styleSelect",
+        "compositionSelect", "spacePreset", "pkLayoutSelect", "styleSelect",
         "texturePreset", "lightPreset", "palettePreset", "moodPreset",
         "detailLevel", "negativeMode"
       ].forEach((id) => {
@@ -1497,7 +1526,7 @@ ${negative}`;
         $("editInstruction").value = "";
         [
           "corePreset", "plantPreset", "scenePreset", "peoplePreset", "objectPreset",
-          "compositionSelect", "spacePreset", "styleSelect", "texturePreset",
+          "compositionSelect", "spacePreset", "pkLayoutSelect", "styleSelect", "texturePreset",
           "lightPreset", "palettePreset", "moodPreset"
         ].forEach((id) => { $(id).value = ""; });
         $("detailLevel").value = "";
