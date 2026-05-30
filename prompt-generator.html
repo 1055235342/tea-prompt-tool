@@ -221,6 +221,33 @@
       border-color: var(--green);
     }
 
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 0 0 18px;
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.42);
+    }
+
+    .mode-tab {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 12px;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .mode-tab.active {
+      background: var(--green);
+      color: white;
+      box-shadow: 0 8px 20px rgba(76, 122, 88, 0.22);
+    }
+
     .workspace {
       display: grid;
       grid-template-rows: auto minmax(360px, 1fr);
@@ -474,6 +501,11 @@
         </div>
       </div>
 
+      <div class="mode-tabs" id="modeTabs" aria-label="生成模式">
+        <button class="mode-tab active" type="button" data-mode="text">文生图</button>
+        <button class="mode-tab" type="button" data-mode="image">图生图</button>
+      </div>
+
       <details class="section" open>
         <summary><div class="section-title"><span>基础设定</span><span>01</span></div></summary>
         <div class="section-body">
@@ -516,28 +548,25 @@
               <input id="copyPlacement" placeholder="如：顶部大标题，左侧竖排，保留标题安全区，文字清晰不乱码">
             </div>
           </div>
+        </div>
+      </details>
+
+      <details class="section" id="imageSection" open hidden>
+        <summary><div class="section-title"><span>上传图片</span><span>03</span></div></summary>
+        <div class="section-body">
           <div class="field">
-            <label for="imageMode">是否基于已有图片修改</label>
-            <select id="imageMode">
-              <option value="none">没有图片，直接生成新图</option>
-              <option value="edit">有图片，基于当前图片修改</option>
-            </select>
+            <label for="imageDescription">当前图片内容</label>
+            <textarea id="imageDescription" placeholder="描述当前图片里已有的主体、背景、文字、颜色、构图、问题点"></textarea>
           </div>
-          <div id="imageFields" hidden>
-            <div class="field">
-              <label for="imageDescription">当前图片内容</label>
-              <textarea id="imageDescription" placeholder="描述当前图片里已有的主体、背景、文字、颜色、构图、问题点"></textarea>
-            </div>
-            <div class="field">
-              <label for="editInstruction">补充修改目标</label>
-              <textarea id="editInstruction" placeholder="如：保留原图风格和产品罐，改成小红书产品图，增加春茶上新文案，背景更干净"></textarea>
-            </div>
+          <div class="field">
+            <label for="editInstruction">补充修改目标</label>
+            <textarea id="editInstruction" placeholder="如：保留原图风格和产品罐，改成小红书产品图，增加春茶上新文案，背景更干净"></textarea>
           </div>
         </div>
       </details>
 
       <details class="section">
-        <summary><div class="section-title"><span>画面内容</span><span>03</span></div></summary>
+        <summary><div class="section-title"><span>画面内容</span><span>04</span></div></summary>
         <div class="section-body">
           <div class="field">
             <label for="corePreset">核心画面</label>
@@ -559,7 +588,7 @@
       </details>
 
       <details class="section">
-        <summary><div class="section-title"><span>元素控制</span><span>04</span></div></summary>
+        <summary><div class="section-title"><span>元素控制</span><span>05</span></div></summary>
         <div class="section-body">
           <div class="field">
             <label for="plantPreset">植物元素</label>
@@ -581,7 +610,7 @@
       </details>
 
       <details class="section" open>
-        <summary><div class="section-title"><span>构图空间</span><span>05</span></div></summary>
+        <summary><div class="section-title"><span>构图空间</span><span>06</span></div></summary>
         <div class="section-body">
           <div class="field">
             <label for="compositionSelect">构图方式</label>
@@ -599,7 +628,7 @@
       </details>
 
       <details class="section">
-        <summary><div class="section-title"><span>风格控制</span><span>06</span></div></summary>
+        <summary><div class="section-title"><span>风格控制</span><span>07</span></div></summary>
         <div class="section-body">
           <div class="field">
             <label for="styleSelect">风格质感</label>
@@ -627,7 +656,7 @@
       </details>
 
       <details class="section">
-        <summary><div class="section-title"><span>质量约束</span><span>07</span></div></summary>
+        <summary><div class="section-title"><span>质量约束</span><span>08</span></div></summary>
         <div class="section-body">
           <div class="field">
             <label for="detailLevel">细节强度</label>
@@ -1223,6 +1252,10 @@
       strict: "避免：高饱和荧光色、赛博朋克、强烈硬光、杂乱背景、低端电商风、粗糙笔触、扁平卡通、低幼插画、过度摄影棚风格、产品比例失衡、文字乱码、建筑透视错误、现代UI界面感、乱码标签、模糊线稿、AI随机解剖错误、信息排版杂乱、3D塑料感、廉价贴图感、噪点、边缘模糊。"
     };
 
+    const state = {
+      mode: "text"
+    };
+
     const $ = (id) => document.getElementById(id);
 
     function fillSelect(select, data) {
@@ -1310,7 +1343,6 @@
       const copyMode = $("copyMode").value;
       const customCopy = $("customCopy").value.trim();
       const copyPlacement = $("copyPlacement").value.trim();
-      const imageMode = $("imageMode").value;
       const imageDescription = $("imageDescription").value.trim();
       const editInstruction = $("editInstruction").value.trim();
       const detail = $("detailLevel").value || "不指定细节强度，保持画面清晰、干净、主体明确";
@@ -1338,7 +1370,7 @@
 文案要求：
 画面需要写入用户指定文案：${customCopy || "【用户尚未填写文案，请先补充具体文字】"}。
 文案排版要求：${copyPlacement || "文字清晰可读，避免乱码、错字、随机文字，保留安全边距，与主体画面协调"}。` : "";
-      const imageBlock = imageMode === "edit" ? `
+      const imageBlock = state.mode === "image" ? `
 图片输入判断：
 这是基于用户上传图片的图生图 / 改图提示词，不是完全从零生成。
 当前图片内容：${imageDescription || "【用户尚未描述当前图片，请补充已有图片的主体、背景、颜色、文字和问题点】"}。
@@ -1437,8 +1469,17 @@ ${negative}`;
 
     function updateConditionalFields() {
       $("copyFields").hidden = $("copyMode").value !== "custom";
-      $("imageFields").hidden = $("imageMode").value !== "edit";
+      $("imageSection").hidden = state.mode !== "image";
       $("pkLayoutField").hidden = $("visualType").value !== "pk";
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      document.querySelectorAll(".mode-tab").forEach((button) => {
+        button.classList.toggle("active", button.dataset.mode === mode);
+      });
+      updateConditionalFields();
+      generate();
     }
 
     function showToast(text) {
@@ -1491,11 +1532,12 @@ ${negative}`;
         syncTeaDefaults();
         generate();
       });
-      ["copyMode", "imageMode"].forEach((id) => {
-        $(id).addEventListener("change", () => {
-          updateConditionalFields();
-          generate();
-        });
+      document.querySelectorAll(".mode-tab").forEach((button) => {
+        button.addEventListener("click", () => setMode(button.dataset.mode));
+      });
+      $("copyMode").addEventListener("change", () => {
+        updateConditionalFields();
+        generate();
       });
       $("teaType").addEventListener("change", () => {
         updateTeaFields();
@@ -1523,7 +1565,10 @@ ${negative}`;
         $("copyMode").value = "none";
         $("customCopy").value = "";
         $("copyPlacement").value = "";
-        $("imageMode").value = "none";
+        state.mode = "text";
+        document.querySelectorAll(".mode-tab").forEach((button) => {
+          button.classList.toggle("active", button.dataset.mode === "text");
+        });
         $("imageDescription").value = "";
         $("editInstruction").value = "";
         [
