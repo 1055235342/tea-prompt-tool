@@ -117,10 +117,7 @@
       width: min(1160px, calc(100% - 44px));
       margin: 0 auto;
       padding: clamp(42px, 7vw, 78px) 0 48px;
-      display: grid;
-      grid-template-columns: minmax(0, 0.92fr) minmax(320px, 1fr);
-      gap: clamp(28px, 5vw, 72px);
-      align-items: center;
+      display: block;
     }
 
     .kicker {
@@ -144,7 +141,7 @@
       margin: 0;
       font-size: clamp(38px, 6vw, 70px);
       line-height: 1.05;
-      max-width: 660px;
+      max-width: 820px;
     }
 
     .hero p {
@@ -153,6 +150,35 @@
       color: var(--muted);
       font-size: 18px;
       line-height: 1.75;
+    }
+
+    .hero-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(300px, 0.55fr);
+      gap: clamp(24px, 5vw, 64px);
+      align-items: end;
+      margin-bottom: 34px;
+    }
+
+    .quick-panel {
+      background: rgba(255, 250, 240, 0.72);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+      box-shadow: 0 12px 34px rgba(40, 49, 36, 0.07);
+    }
+
+    .quick-panel strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .quick-panel p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 14px;
     }
 
     .actions {
@@ -184,14 +210,45 @@
       color: var(--ink);
     }
 
+    .section-head {
+      margin: 38px 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      border-top: 1px solid rgba(216, 203, 181, 0.72);
+      padding-top: 26px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: 25px;
+    }
+
+    .section-head p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
     .tool-card {
       position: relative;
       background: rgba(255, 250, 240, 0.82);
       border: 1px solid var(--line);
       border-radius: 8px;
       box-shadow: var(--shadow);
-      padding: 28px;
+      padding: 20px;
       overflow: hidden;
+      min-height: 216px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
     }
 
     .tool-card::before {
@@ -214,13 +271,13 @@
       justify-content: space-between;
       align-items: flex-start;
       gap: 18px;
-      padding-bottom: 20px;
+      padding-bottom: 14px;
       border-bottom: 1px solid rgba(216, 203, 181, 0.72);
     }
 
     .tool-card h3 {
       margin: 0;
-      font-size: 28px;
+      font-size: 20px;
       line-height: 1.18;
     }
 
@@ -235,7 +292,7 @@
     }
 
     .tool-card p {
-      margin: 18px 0 0;
+      margin: 14px 0 0;
       color: var(--muted);
       line-height: 1.7;
       font-size: 15px;
@@ -269,7 +326,7 @@
     }
 
     .card-link {
-      margin-top: 24px;
+      margin-top: 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -300,16 +357,24 @@
         flex-direction: column;
       }
 
-      main {
+      .hero-panel {
         grid-template-columns: 1fr;
       }
 
       .hero h2 {
         max-width: none;
       }
+
+      .tool-grid {
+        grid-template-columns: 1fr 1fr;
+      }
     }
 
     @media (max-width: 560px) {
+      .tool-grid {
+        grid-template-columns: 1fr;
+      }
+
       .feature-grid {
         grid-template-columns: 1fr;
       }
@@ -334,49 +399,175 @@
     </header>
 
     <main>
-      <section class="hero">
-        <div class="kicker">TEA VISUAL TOOLKIT</div>
-        <h2>把茶叶视觉创意变成可复制的提示词</h2>
-        <p>这里是工具入口页。当前已上线茶叶文生图提示词生成器，适合商业 KV、产品摄影、礼盒包装、茶空间、知识图鉴、水墨意境和节气插画等方向。</p>
-        <div class="actions">
-          <a class="btn primary" href="./prompt-generator.html">进入提示词生成器</a>
-          <a class="btn secondary" href="https://github.com/1055235342/tea-prompt-tool" target="_blank" rel="noreferrer">查看 GitHub</a>
+      <section class="hero-panel">
+        <div class="hero">
+          <div class="kicker">TEA VISUAL TOOLKIT</div>
+          <h2>茶叶创作工具导航</h2>
+          <p>这里不只放提示词生成器，也集中收纳常用 AI 对话和图像工具。先在本地工具生成茶叶提示词，再跳转到 ChatGPT、Gemini、豆包或图像工具里继续创作。</p>
+          <div class="actions">
+            <a class="btn primary" href="./prompt-generator.html">打开提示词生成器</a>
+            <a class="btn secondary" href="https://github.com/1055235342/tea-prompt-tool" target="_blank" rel="noreferrer">查看 GitHub</a>
+          </div>
+        </div>
+        <div class="quick-panel">
+          <strong>推荐工作流</strong>
+          <p>生成茶叶提示词 → 复制 → 粘贴到对话或绘图工具 → 根据结果回到生成器微调画面结构、风格、材质和负面词。</p>
         </div>
       </section>
 
-      <section class="tool-card" aria-label="茶叶文生图提示词生成器">
-        <div class="card-top">
-          <h3>茶叶文生图提示词生成器</h3>
-          <span class="badge">已上线</span>
-        </div>
-        <p>选择图片类型、茶叶品类、构图、画面结构、材质、光影、色彩、氛围和负面词，自动生成完整提示词并一键复制。</p>
-        <div class="feature-grid">
-          <div class="feature">
-            <strong>12 类图片类型</strong>
-            <span>商业 KV、知识图鉴、产品摄影、礼盒包装、茶空间等。</span>
-          </div>
-          <div class="feature">
-            <strong>29 个茶叶品类</strong>
-            <span>覆盖绿茶、红茶、乌龙、白茶、黄茶、黑茶、花茶。</span>
-          </div>
-          <div class="feature">
-            <strong>独立结构控制</strong>
-            <span>核心画面、元素、构图、画面结构、风格可单独变更。</span>
-          </div>
-          <div class="feature">
-            <strong>可复制输出</strong>
-            <span>生成完整提示词，可直接用于文生图工具。</span>
+      <section aria-label="本地工具">
+        <div class="section-head">
+          <div>
+            <h3>本地工具</h3>
+            <p>当前项目内维护的茶叶创作工具。</p>
           </div>
         </div>
-        <a class="card-link" href="./prompt-generator.html">
-          <span>打开工具</span>
-          <span class="arrow">→</span>
-        </a>
+        <div class="tool-grid">
+          <article class="tool-card">
+            <div class="card-top">
+              <h3>茶叶文生图提示词生成器</h3>
+              <span class="badge">已上线</span>
+            </div>
+            <p>选择图片类型、茶叶品类、构图、画面结构、材质、光影、色彩、氛围和负面词，自动生成完整提示词并一键复制。</p>
+            <a class="card-link" href="./prompt-generator.html">
+              <span>打开工具</span>
+              <span class="arrow">→</span>
+            </a>
+          </article>
+        </div>
+      </section>
+
+      <section aria-label="AI 对话工具">
+        <div class="section-head">
+          <div>
+            <h3>AI 对话工具</h3>
+            <p>适合改写提示词、扩展创意、生成标题和整理风格说明。</p>
+          </div>
+        </div>
+        <div class="tool-grid">
+          <article class="tool-card">
+            <div class="card-top">
+              <h3>ChatGPT</h3>
+              <span class="badge">对话</span>
+            </div>
+            <p>用于润色提示词、拆解画面逻辑、扩写商业海报和茶文化内容。</p>
+            <a class="card-link" href="https://chatgpt.com/" target="_blank" rel="noreferrer">
+              <span>打开 ChatGPT</span>
+              <span class="arrow">→</span>
+            </a>
+          </article>
+
+          <article class="tool-card">
+            <div class="card-top">
+              <h3>Gemini</h3>
+              <span class="badge">对话</span>
+            </div>
+            <p>适合做多版本创意扩展、英文提示词转换和跨语言内容整理。</p>
+            <a class="card-link" href="https://gemini.google.com/app" target="_blank" rel="noreferrer">
+              <span>打开 Gemini</span>
+              <span class="arrow">→</span>
+            </a>
+          </article>
+
+          <article class="tool-card">
+            <div class="card-top">
+              <h3>豆包</h3>
+              <span class="badge">对话</span>
+            </div>
+            <p>适合中文语境下的茶文化文案、风格描述、短视频脚本和内容改写。</p>
+            <a class="card-link" href="https://www.doubao.com/chat/" target="_blank" rel="noreferrer">
+              <span>打开豆包</span>
+              <span class="arrow">→</span>
+            </a>
+          </article>
+
+          <article class="tool-card">
+            <div class="card-top">
+              <h3>Claude</h3>
+              <span class="badge">对话</span>
+            </div>
+            <p>适合长文档整理、品牌调性梳理和复杂提示词结构优化。</p>
+            <a class="card-link" href="https://claude.ai/" target="_blank" rel="noreferrer">
+              <span>打开 Claude</span>
+              <span class="arrow">→</span>
+            </a>
+          </article>
+
+          <article class="tool-card">
+            <div class="card-top">
+              <h3>Kimi</h3>
+              <span class="badge">对话</span>
+            </div>
+            <p>适合中文资料整理、长文本阅读和茶叶知识内容梳理。</p>
+            <a class="card-link" href="https://www.kimi.com/" target="_blank" rel="noreferrer">
+              <span>打开 Kimi</span>
+              <span class="arrow">→</span>
+            </a>
+          </article>
+
+          <article class="tool-card">
+            <div class="card-top">
+              <h3>DeepSeek</h3>
+              <span class="badge">对话</span>
+            </div>
+            <p>适合结构化分析、提示词逻辑检查和批量生成变体。</p>
+            <a class="card-link" href="https://chat.deepseek.com/" target="_blank" rel="noreferrer">
+              <span>打开 DeepSeek</span>
+              <span class="arrow">→</span>
+            </a>
+          </article>
+        </div>
+      </section>
+
+      <section aria-label="AI 图像工具">
+        <div class="section-head">
+          <div>
+            <h3>AI 图像工具</h3>
+            <p>适合粘贴生成好的茶叶提示词，直接进行文生图或视觉实验。</p>
+          </div>
+        </div>
+        <div class="tool-grid">
+          <article class="tool-card">
+            <div class="card-top">
+              <h3>即梦 AI</h3>
+              <span class="badge">图像</span>
+            </div>
+            <p>中文提示词友好，适合国风、新中式、商业海报和短视频视觉探索。</p>
+            <a class="card-link" href="https://www.jimeng.com/" target="_blank" rel="noreferrer">
+              <span>打开即梦</span>
+              <span class="arrow">→</span>
+            </a>
+          </article>
+
+          <article class="tool-card">
+            <div class="card-top">
+              <h3>Midjourney</h3>
+              <span class="badge">图像</span>
+            </div>
+            <p>适合高审美视觉探索、风格化海报和概念艺术方向。</p>
+            <a class="card-link" href="https://www.midjourney.com/" target="_blank" rel="noreferrer">
+              <span>打开 Midjourney</span>
+              <span class="arrow">→</span>
+            </a>
+          </article>
+
+          <article class="tool-card">
+            <div class="card-top">
+              <h3>LiblibAI</h3>
+              <span class="badge">图像</span>
+            </div>
+            <p>适合模型风格实验、中文 AIGC 图片工作流和电商视觉尝试。</p>
+            <a class="card-link" href="https://www.liblib.art/" target="_blank" rel="noreferrer">
+              <span>打开 LiblibAI</span>
+              <span class="arrow">→</span>
+            </a>
+          </article>
+        </div>
       </section>
     </main>
 
     <footer>
-      后续新增工具时，可以继续在这个导航页添加入口。
+      后续新增工具时，继续在导航页添加卡片即可。
     </footer>
   </div>
 </body>
