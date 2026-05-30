@@ -20,6 +20,12 @@
 
     * { box-sizing: border-box; }
 
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
@@ -33,143 +39,18 @@
     a { color: inherit; text-decoration: none; }
 
     .page {
-      min-height: 100vh;
+      height: 100dvh;
       display: grid;
-      grid-template-rows: auto 1fr auto;
-    }
-
-    header {
-      padding: 20px clamp(20px, 4vw, 56px);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 18px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.86);
-      backdrop-filter: blur(16px);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .leaf-mark {
-      width: 42px;
-      height: 42px;
-      position: relative;
-      flex: 0 0 auto;
-    }
-
-    .leaf-mark::before {
-      content: "";
-      position: absolute;
-      inset: 8px 2px 10px;
-      border-radius: 50% 0 50% 0;
-      background: var(--dark);
-      transform: rotate(-18deg);
-    }
-
-    .leaf-mark::after {
-      content: "";
-      position: absolute;
-      left: 10px;
-      top: 21px;
-      width: 25px;
-      height: 2px;
-      background: #d8eadf;
-      transform: rotate(-18deg);
-    }
-
-    .brand h1 {
-      margin: 0;
-      font-size: 22px;
-      line-height: 1.15;
-    }
-
-    .brand p {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .status {
-      color: var(--green);
-      font-size: 13px;
-      font-weight: 750;
-      padding: 8px 12px;
-      border: 1px solid rgba(76, 122, 88, 0.28);
-      background: var(--green-soft);
-      border-radius: 999px;
-      white-space: nowrap;
+      grid-template-rows: 1fr;
+      overflow: hidden;
     }
 
     main {
-      width: min(1200px, calc(100% - 40px));
+      width: min(1240px, calc(100% - 32px));
+      height: 100dvh;
       margin: 0 auto;
-      padding: 32px 0 46px;
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 360px;
-      gap: 32px;
-      align-items: end;
-      margin-bottom: 28px;
-    }
-
-    .kicker {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--green);
-      font-weight: 850;
-      font-size: 12px;
-      margin-bottom: 15px;
-    }
-
-    .kicker::before {
-      content: "";
-      width: 34px;
-      height: 2px;
-      background: var(--green);
-    }
-
-    .hero h2 {
-      margin: 0;
-      font-size: clamp(34px, 5vw, 56px);
-      line-height: 1.08;
-      max-width: 760px;
-    }
-
-    .hero p {
-      margin: 20px 0 0;
-      max-width: 680px;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.7;
-    }
-
-    .workflow {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 12px 28px rgba(15, 29, 23, 0.06);
-    }
-
-    .workflow strong {
-      display: block;
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
-
-    .workflow p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.65;
-      font-size: 14px;
+      padding: 16px 0;
+      overflow: hidden;
     }
 
     .tool-shell {
@@ -177,8 +58,8 @@
       grid-template-columns: 332px minmax(0, 1fr);
       gap: 20px;
       align-items: stretch;
-      border-top: 1px solid var(--line);
-      padding-top: 24px;
+      height: 100%;
+      min-height: 0;
     }
 
     .tool-nav {
@@ -187,7 +68,7 @@
       border-radius: 8px;
       box-shadow: var(--shadow);
       padding: 14px;
-      max-height: 690px;
+      min-height: 0;
       overflow: auto;
     }
 
@@ -243,7 +124,7 @@
       border-radius: 8px;
       box-shadow: var(--shadow);
       padding: clamp(22px, 4vw, 34px);
-      min-height: 620px;
+      min-height: 0;
       display: grid;
       grid-template-rows: auto 1fr auto;
     }
@@ -286,6 +167,8 @@
       grid-template-columns: minmax(0, 1.1fr) minmax(250px, 0.75fr);
       gap: 22px;
       padding: 24px 0;
+      min-height: 0;
+      overflow: auto;
     }
 
     .info-block {
@@ -360,34 +243,21 @@
       color: white;
     }
 
-    footer {
-      padding: 22px clamp(22px, 5vw, 72px);
-      color: var(--muted);
-      font-size: 13px;
-      border-top: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.72);
-    }
-
     @media (max-width: 1024px) {
-      header {
-        align-items: flex-start;
-        flex-direction: column;
+      .tool-shell {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(160px, 26vh) minmax(0, 1fr);
       }
 
-      .hero,
-      .tool-shell,
       .detail-body {
         grid-template-columns: 1fr;
-      }
-
-      .tool-nav {
-        max-height: none;
       }
 
       .tool-nav {
         display: flex;
         gap: 14px;
         overflow-x: auto;
+        overflow-y: hidden;
         padding: 12px;
       }
 
@@ -403,26 +273,18 @@
     }
 
     @media (max-width: 640px) {
-      header {
-        padding: 18px;
-      }
-
       main {
         width: calc(100% - 28px);
-        padding-top: 24px;
-      }
-
-      .hero h2 {
-        font-size: 36px;
-      }
-
-      .workflow {
-        padding: 16px;
+        padding: 12px 0;
       }
 
       .detail-panel {
-        min-height: auto;
         padding: 18px;
+      }
+
+      .tool-shell {
+        gap: 12px;
+        grid-template-rows: minmax(190px, 34vh) minmax(0, 1fr);
       }
 
       .detail-top {
@@ -435,7 +297,6 @@
 
       .tool-nav {
         display: block;
-        max-height: 360px;
         overflow-y: auto;
         overflow-x: hidden;
         margin-left: 0;
@@ -464,30 +325,7 @@
 </head>
 <body>
   <div class="page">
-    <header>
-      <div class="brand">
-        <div class="leaf-mark" aria-hidden="true"></div>
-        <div>
-          <h1>茶叶 AI 工具导航</h1>
-          <p>Prompt tools for tea visuals</p>
-        </div>
-      </div>
-      <div class="status">静态部署 · 可持续维护</div>
-    </header>
-
     <main>
-      <section class="hero">
-        <div>
-          <div class="kicker">TEA VISUAL TOOLKIT</div>
-          <h2>茶叶创作工具导航</h2>
-          <p>左侧选择工具，右侧查看具体功能、适用场景和入口。先用提示词生成器完成茶叶视觉描述，再跳转到对话或图像工具继续创作。</p>
-        </div>
-        <div class="workflow">
-          <strong>推荐工作流</strong>
-          <p>生成茶叶提示词 → 复制 → 粘贴到对话或绘图工具 → 根据结果回到生成器微调画面结构、风格、材质和负面词。</p>
-        </div>
-      </section>
-
       <section class="tool-shell" aria-label="AI 工具导航">
         <nav class="tool-nav" id="toolNav" aria-label="工具列表"></nav>
 
@@ -517,10 +355,6 @@
         </article>
       </section>
     </main>
-
-    <footer>
-      后续新增工具时，在 `index.html` 的工具数据里添加一项即可。
-    </footer>
   </div>
 
   <script>
