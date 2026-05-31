@@ -555,8 +555,12 @@
         <summary><div class="section-title"><span>上传图片</span><span>03</span></div></summary>
         <div class="section-body">
           <div class="field">
-            <label for="editInstruction">修改要求</label>
-            <textarea id="editInstruction" placeholder="最简单写法：保留原图风格，改成小红书产品图，加入文案“春茶上新”。"></textarea>
+            <label for="editPreset">修改要求选项</label>
+            <select id="editPreset"></select>
+          </div>
+          <div class="field">
+            <label for="editInstruction">自定义补充</label>
+            <textarea id="editInstruction" placeholder="可选：保留原图风格，加入文案“春茶上新”，背景更干净。"></textarea>
           </div>
         </div>
       </details>
@@ -1128,6 +1132,19 @@
       "排行榜结构：按推荐度、价格、香气或适合人群排序，形成Top榜单式PK图"
     ];
 
+    const editPresets = [
+      "保留原图风格，改成更适合当前平台的封面图，主体更清晰，画面更干净",
+      "保留原图风格和主体，加入用户填写的文案，文字清晰可读，不乱码",
+      "保留原图风格，改成产品图，突出茶叶产品、包装、茶汤和高级质感",
+      "保留原图风格，改成产品详情图，增强卖点说明、信息分区和细节展示",
+      "保留原图风格，改成知识图，增加科普信息结构、标签和清晰分区",
+      "保留原图风格，改成生活图，增强真实使用场景、茶空间氛围和种草感",
+      "保留原图风格，改成大字图，标题更醒目，移动端一眼可读",
+      "保留原图风格，改成PK图，加入对比结构、VS关系和清晰结论",
+      "保留原图主体，替换或简化背景，让画面更干净、更高级",
+      "保留原图风格，只优化构图、留白、文字安全区和社媒发布适配"
+    ];
+
     const styles = [
       "纸雕层叠插画，浅浮雕视觉，手工纸张肌理",
       "复古植物学插画，钢笔线稿，水彩渲染，旧纸纹理",
@@ -1339,7 +1356,9 @@
       const copyMode = $("copyMode").value;
       const customCopy = $("customCopy").value.trim();
       const copyPlacement = $("copyPlacement").value.trim();
+      const editPreset = arrayValue("editPreset", editPresets, "");
       const editInstruction = $("editInstruction").value.trim();
+      const editRequest = [editPreset, editInstruction].filter(Boolean).join("；");
       const detail = $("detailLevel").value || "不指定细节强度，保持画面清晰、干净、主体明确";
       const negative = $("negativeMode").value ? negativeSets[$("negativeMode").value] : "避免：文字乱码、无关茶名、主体混乱、低清晰度、明显比例错误。";
       const core = presetValue("corePreset", corePresets, type.core);
@@ -1369,7 +1388,7 @@
 图片输入判断：
 这是基于用户上传图片的图生图 / 改图提示词，不是完全从零生成。
 请保留原图的整体风格、颜色、光影、材质质感和主要主体，不要改成完全不同的风格。
-用户修改要求：${editInstruction || "保留原图风格，根据当前平台、内容类型和文案内容生成新的茶叶图片"}。
+用户修改要求：${editRequest || "保留原图风格，根据当前平台、内容类型和文案内容生成新的茶叶图片"}。
 在保留原图风格的基础上，根据平台、内容类型和文案内容重新组织画面，让图片更适合发布。` : `
 图片输入判断：
 没有参考图，按纯文生图逻辑直接生成新画面。`;
@@ -1519,6 +1538,7 @@ ${negative}`;
       fillArraySelect($("compositionSelect"), compositions);
       fillArraySelect($("spacePreset"), spacePresets);
       fillArraySelect($("pkLayoutSelect"), pkLayouts);
+      fillArraySelect($("editPreset"), editPresets);
       fillArraySelect($("styleSelect"), styles);
       fillArraySelect($("texturePreset"), texturePresets);
       fillArraySelect($("lightPreset"), lightPresets);
@@ -1550,7 +1570,7 @@ ${negative}`;
         generate();
       });
       [
-        "customCopy", "copyPlacement", "editInstruction",
+        "customCopy", "copyPlacement", "editPreset", "editInstruction",
         "corePreset", "scene", "product", "extraElements",
         "plantPreset", "scenePreset", "peoplePreset", "objectPreset",
         "compositionSelect", "spacePreset", "pkLayoutSelect", "styleSelect",
@@ -1574,6 +1594,7 @@ ${negative}`;
         document.querySelectorAll(".mode-tab").forEach((button) => {
           button.classList.toggle("active", button.dataset.mode === "text");
         });
+        $("editPreset").value = "";
         $("editInstruction").value = "";
         [
           "corePreset", "plantPreset", "scenePreset", "peoplePreset", "objectPreset",
