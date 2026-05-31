@@ -700,7 +700,7 @@
               <h2>生成结果</h2>
               <div class="counter" id="counter">0 字</div>
             </div>
-            <textarea id="promptOutput" spellcheck="false"></textarea>
+            <textarea id="promptOutput" spellcheck="false" placeholder="选择内容类型后生成提示词"></textarea>
           </section>
 
           <section class="side">
@@ -1460,6 +1460,14 @@ ${negative}`;
     }
 
     function generate() {
+      if (!$("visualType").value) {
+        $("promptOutput").value = "";
+        $("counter").textContent = "请选择内容类型";
+        renderPalette();
+        $("scoreType").textContent = "-";
+        $("scoreText").textContent = "选择内容类型后生成提示词。";
+        return;
+      }
       const prompt = buildPrompt();
       $("promptOutput").value = prompt;
       $("counter").textContent = `${prompt.length} 字`;
@@ -1492,6 +1500,10 @@ ${negative}`;
 
     async function copyPrompt() {
       const text = $("promptOutput").value;
+      if (!text.trim()) {
+        showToast("请先选择内容类型");
+        return;
+      }
       try {
         await navigator.clipboard.writeText(text);
         showToast("已复制到剪贴板");
