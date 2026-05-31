@@ -221,6 +221,26 @@
       border-color: var(--green);
     }
 
+    .helper-card {
+      border: 1px solid rgba(76, 122, 88, 0.22);
+      background: rgba(231, 234, 217, 0.42);
+      border-radius: 8px;
+      padding: 13px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .helper-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .helper-card .ghost-btn {
+      width: 100%;
+    }
+
     .mode-tabs {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -561,6 +581,10 @@
           <div class="field">
             <label for="editInstruction">自定义补充</label>
             <textarea id="editInstruction" placeholder="可选：保留原图风格，加入文案“春茶上新”，背景更干净。"></textarea>
+          </div>
+          <div class="helper-card">
+            <p>先把图片上传给 ChatGPT，再粘贴这段识图分析提示词。GPT 会先判断原图类型、平台、风格和可保留内容，再生成最终图生图提示词。</p>
+            <button class="ghost-btn" id="copyAnalyzeBtn" type="button">复制识图分析提示词</button>
           </div>
         </div>
       </details>
@@ -1295,6 +1319,12 @@
       return items[Number($(selectId).value)] || fallback;
     }
 
+    function selectedOptionText(selectId) {
+      const select = $(selectId);
+      if (!select || select.value === "") return "";
+      return select.selectedOptions[0]?.textContent || "";
+    }
+
     function selectedPlatform() {
       return platformTypes[$("platformType").value] || {
         label: "通用平台",
@@ -1458,6 +1488,52 @@ ${detail}，高清，4K/8K，清晰纸张纹理，层次丰富，高级东方审
 ${negative}`;
     }
 
+    function buildImageAnalysisPrompt() {
+      const tea = selectedTea();
+      const customCopy = $("customCopy").value.trim();
+      const copyPlacement = $("copyPlacement").value.trim();
+      const editPreset = arrayValue("editPreset", editPresets, "");
+      const editInstruction = $("editInstruction").value.trim();
+      const editRequest = [editPreset, editInstruction].filter(Boolean).join("；");
+      const platformText = selectedOptionText("platformType") || "未指定，请你根据原图和发布场景判断";
+      const visualText = selectedOptionText("visualType") || "未指定，请你根据原图判断";
+      const teaText = tea.label === "茶叶" ? "未指定，请根据文案或原图判断，不要强行写具体茶名" : tea.label;
+      const copyText = $("copyMode").value === "custom"
+        ? (customCopy || "需要写入文案，但用户还没填写具体文案，请提醒用户补充")
+        : "不要求写入文案，除非原图已有必须保留的文字";
+      const placementText = copyPlacement || "由你根据原图构图和平台安全区判断";
+      const requestText = editRequest || "保留原图风格、主体和画面气质，根据识别结果优化为更适合发布的茶叶图片";
+
+      return `请分析我上传的图片，并帮我生成一段适合图生图 / 改图的茶叶视觉提示词。
+
+你的工作方式：
+先识别原图，再生成最终提示词。不要直接把它当成从零文生图。
+
+请先判断原图：
+1. 原图属于什么内容类型：知识图、产品图、产品详情图、生活图、大字图、排名图，或其他。
+2. 原图最适合什么平台：视频号、抖音、小红书、朋友圈、贴图，或其他。
+3. 原图的主体、构图、风格、颜色、材质、光影、文字情况。
+4. 原图中必须保留的内容。
+5. 原图中可以优化的内容。
+
+我的已选条件：
+- 发布平台：${platformText}
+- 内容类型：${visualText}
+- 茶叶品类：${teaText}
+- 需要写入文案：${copyText}
+- 文案位置：${placementText}
+- 修改要求：${requestText}
+
+生成最终图生图提示词时请遵守：
+- 保留原图整体风格、色调、材质质感、光影方向、画面气质和主要主体。
+- 根据平台和内容类型优化标题安全区、主体位置、信息结构和视觉重点。
+- 如果需要文字，文字必须准确，不要乱码，不要随机文字。
+- 不要把原图改成完全不同的风格。
+- 如果我的已选条件和原图明显冲突，以“保留原图风格和主体”为优先，再做合理改图。
+
+最后只输出“最终图生图提示词”，不要输出分析过程。`;
+    }
+
     function renderPalette() {
       const tea = selectedTea();
       $("paletteName").textContent = tea.palette;
@@ -1526,6 +1602,20 @@ ${negative}`;
       }
     }
 
+    async function copyAnalysisPrompt() {
+      const text = buildImageAnalysisPrompt();
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("已复制识图分析提示词");
+      } catch {
+        const output = $("promptOutput");
+        output.value = text;
+        output.select();
+        document.execCommand("copy");
+        showToast("已复制识图分析提示词");
+      }
+    }
+
     function init() {
       fillSelect($("platformType"), platformTypes);
       fillSelect($("visualType"), visualTypes);
@@ -1582,6 +1672,7 @@ ${negative}`;
       });
 
       $("copyBtn").addEventListener("click", copyPrompt);
+      $("copyAnalyzeBtn").addEventListener("click", copyAnalysisPrompt);
       $("resetBtn").addEventListener("click", () => {
         $("platformType").value = "";
         $("visualType").value = "";
