@@ -555,12 +555,8 @@
         <summary><div class="section-title"><span>上传图片</span><span>03</span></div></summary>
         <div class="section-body">
           <div class="field">
-            <label for="imageDescription">当前图片内容</label>
-            <textarea id="imageDescription" placeholder="描述当前图片里已有的主体、背景、文字、颜色、构图、问题点"></textarea>
-          </div>
-          <div class="field">
-            <label for="editInstruction">补充修改目标</label>
-            <textarea id="editInstruction" placeholder="如：保留原图风格和产品罐，改成小红书产品图，增加春茶上新文案，背景更干净"></textarea>
+            <label for="editInstruction">修改要求</label>
+            <textarea id="editInstruction" placeholder="最简单写法：保留原图风格，改成小红书产品图，加入文案“春茶上新”。"></textarea>
           </div>
         </div>
       </details>
@@ -1343,7 +1339,6 @@
       const copyMode = $("copyMode").value;
       const customCopy = $("customCopy").value.trim();
       const copyPlacement = $("copyPlacement").value.trim();
-      const imageDescription = $("imageDescription").value.trim();
       const editInstruction = $("editInstruction").value.trim();
       const detail = $("detailLevel").value || "不指定细节强度，保持画面清晰、干净、主体明确";
       const negative = $("negativeMode").value ? negativeSets[$("negativeMode").value] : "避免：文字乱码、无关茶名、主体混乱、低清晰度、明显比例错误。";
@@ -1373,11 +1368,9 @@
       const imageBlock = state.mode === "image" ? `
 图片输入判断：
 这是基于用户上传图片的图生图 / 改图提示词，不是完全从零生成。
-当前图片内容：${imageDescription || "【用户尚未描述当前图片，请补充已有图片的主体、背景、颜色、文字和问题点】"}。
-改图核心规则：必须保留上传图片的整体风格、色调、材质质感、光影方向、画面气质和主体识别度，不要把原图改成完全不同的风格。
-生成策略：在保留原图风格的基础上，根据当前选择的平台规则、内容类型结构和用户填写的文案内容，重新组织画面信息、标题安全区、主体位置和视觉重点。
-修改目标：${editInstruction || "根据平台、内容类型和文案内容生成新的茶叶视觉图；如用户没有补充修改目标，则默认保留原图风格并优化为当前平台和内容类型适用的新版画面"}。
-保留与调整边界：保留原图中可用的主体、构图关系、材质、色彩和氛围，只调整与平台、内容类型、文案排版、信息结构相关的部分，避免无关元素大幅漂移。` : `
+请保留原图的整体风格、颜色、光影、材质质感和主要主体，不要改成完全不同的风格。
+用户修改要求：${editInstruction || "保留原图风格，根据当前平台、内容类型和文案内容生成新的茶叶图片"}。
+在保留原图风格的基础上，根据平台、内容类型和文案内容重新组织画面，让图片更适合发布。` : `
 图片输入判断：
 没有参考图，按纯文生图逻辑直接生成新画面。`;
 
@@ -1557,7 +1550,7 @@ ${negative}`;
         generate();
       });
       [
-        "customCopy", "copyPlacement", "imageDescription", "editInstruction",
+        "customCopy", "copyPlacement", "editInstruction",
         "corePreset", "scene", "product", "extraElements",
         "plantPreset", "scenePreset", "peoplePreset", "objectPreset",
         "compositionSelect", "spacePreset", "pkLayoutSelect", "styleSelect",
@@ -1581,7 +1574,6 @@ ${negative}`;
         document.querySelectorAll(".mode-tab").forEach((button) => {
           button.classList.toggle("active", button.dataset.mode === "text");
         });
-        $("imageDescription").value = "";
         $("editInstruction").value = "";
         [
           "corePreset", "plantPreset", "scenePreset", "peoplePreset", "objectPreset",
