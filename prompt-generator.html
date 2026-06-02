@@ -563,6 +563,23 @@
               <label for="customCopy">需要写入图片的文案</label>
               <textarea id="customCopy" placeholder="如：春茶上新 / 西湖龙井 / 明前头采 / 一杯春天的鲜爽"></textarea>
             </div>
+            <div class="compact-row" id="copyJudgeFields">
+              <div class="field">
+                <label for="copyRole">文案用途判定</label>
+                <select id="copyRole">
+                  <option value="auto">自动判断</option>
+                  <option value="cover">这是封面文案</option>
+                  <option value="inner">这是内页文案</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="copyGenerateTarget">先生成页面</label>
+                <select id="copyGenerateTarget">
+                  <option value="cover">先生成封面</option>
+                  <option value="inner">先生成内页</option>
+                </select>
+              </div>
+            </div>
             <div class="field">
               <label for="copyPlacement">文案位置与要求</label>
               <input id="copyPlacement" placeholder="如：顶部大标题，左侧竖排，保留标题安全区，文字清晰不乱码">
@@ -1335,8 +1352,36 @@
       };
     }
 
+    function judgeCopyUsage() {
+      const text = $("customCopy").value.trim();
+      const manualRole = $("copyRole")?.value || "auto";
+      const selectedVisual = $("visualType").value;
+      const rankingPattern = /(排名|排行|榜单|榜|top|TOP|Top|第\s*[一二三四五六七八九十\d]|pk|PK|vs|VS|对比|推荐度|性价比|从高到低|从低到高)/;
+      const listPattern = /(\n|、|；|;|1[.、]|2[.、]|3[.、]|①|②|③|-|\*)/;
+      const isRanking = selectedVisual === "pk" || rankingPattern.test(text);
+      const looksInner = text.length > 46 || text.split(/\n+/).filter(Boolean).length >= 3 || listPattern.test(text);
+      const role = manualRole === "auto" ? (isRanking || !looksInner ? "cover" : "inner") : manualRole;
+      const coverType = isRanking ? "pk" : "bigText";
+      return {
+        role,
+        isRanking,
+        coverType,
+        label: role === "cover" ? (isRanking ? "封面文案，归类为排名图" : "封面文案，归类为大字图") : "内页文案，归类为内容页"
+      };
+    }
+
+    function effectiveVisualKey() {
+      const selectedVisual = $("visualType").value;
+      const hasCopy = state.mode === "text" && $("copyMode").value === "custom" && $("customCopy").value.trim();
+      if (!hasCopy) return selectedVisual;
+      const judgement = judgeCopyUsage();
+      if ($("copyGenerateTarget").value === "cover") return judgement.coverType;
+      if (selectedVisual && selectedVisual !== "bigText" && selectedVisual !== "pk") return selectedVisual;
+      return "knowledge";
+    }
+
     function selectedType() {
-      return visualTypes[$("visualType").value] || {
+      return visualTypes[effectiveVisualKey()] || {
         label: "通用内容",
         intro: "茶叶主题视觉，适合根据用户文案自由生成茶文化图片",
         core: "画面围绕所选茶叶或用户文案中的茶叶主体展开，重点表现茶叶、茶汤、茶具、茶空间或品牌内容，整体清晰自然。",
@@ -1380,6 +1425,7 @@
       const platform = selectedPlatform();
       const type = selectedType();
       const tea = selectedTea();
+      const copyJudgement = judgeCopyUsage();
       const scene = $("scene").value.trim() || tea.scene || "东方茶文化场景";
       const product = $("product").value.trim() || tea.product || `${tea.label}茶叶主体`;
       const extra = $("extraElements").value.trim();
@@ -1403,7 +1449,7 @@
       const light = presetValue("lightPreset", lightPresets, type.light);
       const palette = presetValue("palettePreset", palettePresets, tea.palette);
       const mood = presetValue("moodPreset", moodPresets, type.mood);
-      const pkLayout = $("visualType").value === "pk" ? arrayValue("pkLayoutSelect", pkLayouts, "不指定固定排名结构，可根据排序对象自动选择从小到大、从大到小、金字塔、Top榜单、阶梯、表格、象限或横向排序结构") : "";
+      const pkLayout = effectiveVisualKey() === "pk" ? arrayValue("pkLayoutSelect", pkLayouts, "不指定固定排名结构，可根据排序对象自动选择从小到大、从大到小、金字塔、Top榜单、阶梯、表格、象限或横向排序结构") : "";
       const teaNaming = $("teaType").value === "" || $("teaType").value === "custom"
         ? `茶叶品类由用户自定义：${tea.label}，不要自行替换成西湖龙井、碧螺春、祁门红茶等固定茶名`
         : `茶叶品类：${tea.label}`;
@@ -1411,6 +1457,12 @@
       const intro = `${introSubject}，${platform.label}视觉`;
       const coreWithTea = core.replaceAll("所选茶叶", tea.label).replaceAll("茶叶品类", tea.label);
       const copyBlock = copyMode === "custom" ? `
+文案判定：
+用户填写的文案先判定为：${copyJudgement.label}。
+当前优先生成：${$("copyGenerateTarget").value === "cover" ? "封面提示词" : "内页提示词"}。
+封面生成规则：封面一般只归类为大字图或排名图；如果文案不是排名、榜单、对比或排序表达，就归类为大字图。
+内页生成规则：内页更适合知识图、产品详情图、生活图或产品图，重点是信息承载、解释和阅读顺序。
+
 文案要求：
 画面需要写入用户指定文案：${customCopy || "【用户尚未填写文案，请先补充具体文字】"}。
 文案排版要求：${copyPlacement || "文字清晰可读，避免乱码、错字、随机文字，保留安全边距，与主体画面协调"}。` : "";
@@ -1544,16 +1596,21 @@ ${negative}`;
       const [letter, text] = selectedPlatform().score;
       const [, typeText] = selectedType().score;
       $("scoreType").textContent = letter;
-      $("scoreText").textContent = `${text} 当前内容类型：${typeText}`;
+      const copyNote = state.mode === "text" && $("copyMode").value === "custom" && $("customCopy").value.trim()
+        ? ` 文案判定：${judgeCopyUsage().label}。`
+        : "";
+      $("scoreText").textContent = `${text} 当前内容类型：${typeText}${copyNote}`;
     }
 
     function generate() {
-      if (!$("visualType").value) {
+      updateConditionalFields();
+      const hasTextCopy = state.mode === "text" && $("copyMode").value === "custom" && $("customCopy").value.trim();
+      if (!$("visualType").value && !hasTextCopy) {
         $("promptOutput").value = "";
-        $("counter").textContent = "请选择内容类型";
+        $("counter").textContent = "请选择内容类型或填写文案";
         renderPalette();
         $("scoreType").textContent = "-";
-        $("scoreText").textContent = "选择内容类型后生成提示词。";
+        $("scoreText").textContent = "选择内容类型，或在文生图里填写文案后生成提示词。";
         return;
       }
       const prompt = buildPrompt();
@@ -1565,8 +1622,9 @@ ${negative}`;
 
     function updateConditionalFields() {
       $("copyFields").hidden = $("copyMode").value !== "custom";
+      $("copyJudgeFields").hidden = state.mode !== "text";
       $("imageSection").hidden = state.mode !== "image";
-      $("pkLayoutField").hidden = $("visualType").value !== "pk";
+      $("pkLayoutField").hidden = effectiveVisualKey() !== "pk";
     }
 
     function setMode(mode) {
@@ -1660,7 +1718,7 @@ ${negative}`;
         generate();
       });
       [
-        "customCopy", "copyPlacement", "editPreset", "editInstruction",
+        "customCopy", "copyRole", "copyGenerateTarget", "copyPlacement", "editPreset", "editInstruction",
         "corePreset", "scene", "product", "extraElements",
         "plantPreset", "scenePreset", "peoplePreset", "objectPreset",
         "compositionSelect", "spacePreset", "pkLayoutSelect", "styleSelect",
@@ -1680,6 +1738,8 @@ ${negative}`;
         $("customTeaName").value = "";
         $("copyMode").value = "none";
         $("customCopy").value = "";
+        $("copyRole").value = "auto";
+        $("copyGenerateTarget").value = "cover";
         $("copyPlacement").value = "";
         state.mode = "text";
         document.querySelectorAll(".mode-tab").forEach((button) => {
