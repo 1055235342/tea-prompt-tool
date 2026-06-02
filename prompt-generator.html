@@ -560,8 +560,8 @@
           </div>
           <div id="copyFields" hidden>
             <div class="field">
-              <label for="customCopy">需要写入图片的文案</label>
-              <textarea id="customCopy" placeholder="如：春茶上新 / 西湖龙井 / 明前头采 / 一杯春天的鲜爽"></textarea>
+              <label for="customCopy">全部文案</label>
+              <textarea id="customCopy" placeholder="可直接粘贴全部文案，如：封面：春茶上新 / 内页：明前头采、鲜爽回甘、适合冷泡"></textarea>
             </div>
             <div class="compact-row" id="copyJudgeFields">
               <div class="field">
@@ -1352,20 +1352,76 @@
       };
     }
 
+    function stripCopyPrefix(line) {
+      return line.replace(/^(封面文案|封面标题|封面|标题|主标题|大标题|内页文案|内页|正文|详情|卖点|内容|小标题|段落)\s*[:：-]\s*/i, "").trim();
+    }
+
+    function splitCopyContent() {
+      const raw = $("customCopy").value.trim();
+      if (!raw) return { raw: "", cover: "", inner: "", coverSource: "未填写", innerSource: "未填写" };
+
+      const sectionMarker = "(封面文案|封面标题|封面|标题|主标题|大标题|内页文案|内页|正文|详情|卖点|内容|小标题|段落)\\s*[:：-]";
+      const normalized = raw.replace(new RegExp(`\\s*[\\/|]\\s*(?=${sectionMarker})`, "gi"), "\n");
+      const lines = normalized.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+      const coverLines = [];
+      const innerLines = [];
+      let activeSection = "";
+
+      lines.forEach((line) => {
+        const isCoverLine = /^(封面文案|封面标题|封面|标题|主标题|大标题)\s*[:：-]/i.test(line);
+        const isInnerLine = /^(内页文案|内页|正文|详情|卖点|内容|小标题|段落)\s*[:：-]/i.test(line);
+        if (isCoverLine) activeSection = "cover";
+        if (isInnerLine) activeSection = "inner";
+        const cleaned = stripCopyPrefix(line);
+        if (!cleaned) return;
+        if (activeSection === "cover") {
+          coverLines.push(cleaned);
+        } else if (activeSection === "inner") {
+          innerLines.push(cleaned);
+        }
+      });
+
+      if (!coverLines.length && !innerLines.length) {
+        const first = lines[0] || "";
+        const rest = lines.slice(1);
+        const firstIsCover = first.length <= 32 || lines.length > 1;
+        if (firstIsCover) {
+          coverLines.push(stripCopyPrefix(first));
+          innerLines.push(...rest.map(stripCopyPrefix).filter(Boolean));
+        } else {
+          innerLines.push(...lines.map(stripCopyPrefix).filter(Boolean));
+        }
+      }
+
+      const cover = coverLines.join(" / ").trim();
+      const inner = innerLines.join("\n").trim();
+      return {
+        raw,
+        cover,
+        inner,
+        coverSource: cover ? "自动拆分出的封面文案" : "未拆分出封面文案",
+        innerSource: inner ? "自动拆分出的内页文案" : "未拆分出内页文案"
+      };
+    }
+
     function judgeCopyUsage() {
-      const text = $("customCopy").value.trim();
+      const copyParts = splitCopyContent();
+      const targetText = $("copyGenerateTarget")?.value === "inner"
+        ? (copyParts.inner || copyParts.raw)
+        : (copyParts.cover || copyParts.raw);
       const manualRole = $("copyRole")?.value || "auto";
       const selectedVisual = $("visualType").value;
       const rankingPattern = /(排名|排行|榜单|榜|top|TOP|Top|第\s*[一二三四五六七八九十\d]|pk|PK|vs|VS|对比|推荐度|性价比|从高到低|从低到高)/;
       const listPattern = /(\n|、|；|;|1[.、]|2[.、]|3[.、]|①|②|③|-|\*)/;
-      const isRanking = selectedVisual === "pk" || rankingPattern.test(text);
-      const looksInner = text.length > 46 || text.split(/\n+/).filter(Boolean).length >= 3 || listPattern.test(text);
+      const isRanking = selectedVisual === "pk" || rankingPattern.test(targetText);
+      const looksInner = targetText.length > 46 || targetText.split(/\n+/).filter(Boolean).length >= 3 || listPattern.test(targetText);
       const role = manualRole === "auto" ? (isRanking || !looksInner ? "cover" : "inner") : manualRole;
       const coverType = isRanking ? "pk" : "bigText";
       return {
         role,
         isRanking,
         coverType,
+        targetText,
         label: role === "cover" ? (isRanking ? "封面文案，归类为排名图" : "封面文案，归类为大字图") : "内页文案，归类为内容页"
       };
     }
@@ -1430,7 +1486,10 @@
       const product = $("product").value.trim() || tea.product || `${tea.label}茶叶主体`;
       const extra = $("extraElements").value.trim();
       const copyMode = $("copyMode").value;
-      const customCopy = $("customCopy").value.trim();
+      const copyParts = splitCopyContent();
+      const isCoverTarget = $("copyGenerateTarget").value === "cover";
+      const targetCopy = isCoverTarget ? (copyParts.cover || copyParts.raw) : (copyParts.inner || copyParts.raw);
+      const excludedCopy = isCoverTarget ? copyParts.inner : copyParts.cover;
       const copyPlacement = $("copyPlacement").value.trim();
       const editPreset = arrayValue("editPreset", editPresets, "");
       const editInstruction = $("editInstruction").value.trim();
@@ -1459,12 +1518,17 @@
       const copyBlock = copyMode === "custom" ? `
 文案判定：
 用户填写的文案先判定为：${copyJudgement.label}。
-当前优先生成：${$("copyGenerateTarget").value === "cover" ? "封面提示词" : "内页提示词"}。
+当前优先生成：${isCoverTarget ? "封面提示词" : "内页提示词"}。
+用户提供的是完整文案，已经自动拆分为封面文案和内页文案。
+封面文案：${copyParts.cover || "未拆分出明确封面文案，可从完整文案中提炼最短、最醒目的标题"}。
+内页文案：${copyParts.inner || "未拆分出明确内页文案"}。
 封面生成规则：封面一般只归类为大字图或排名图；如果文案不是排名、榜单、对比或排序表达，就归类为大字图。
 内页生成规则：内页更适合知识图、产品详情图、生活图或产品图，重点是信息承载、解释和阅读顺序。
+当前页面只允许使用：${isCoverTarget ? "封面文案" : "内页文案"}。
+${excludedCopy ? `当前页面禁止写入另一部分文案：${excludedCopy}。` : "如果另一部分文案为空，不要自行补写无关文字。"}
 
 文案要求：
-画面需要写入用户指定文案：${customCopy || "【用户尚未填写文案，请先补充具体文字】"}。
+画面需要写入的文案：${targetCopy || "【用户尚未填写文案，请先补充具体文字】"}。
 文案排版要求：${copyPlacement || "文字清晰可读，避免乱码、错字、随机文字，保留安全边距，与主体画面协调"}。` : "";
       const imageBlock = state.mode === "image" ? `
 图片输入判断：
