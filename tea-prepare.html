@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>一群式茶老板前期调查</title>
+  <style>
+    :root {
+      --ink: #24342d;
+      --muted: #69766f;
+      --paper: #f5f1e8;
+      --card: #fffdf8;
+      --line: #d9d1c3;
+      --tea: #426852;
+      --tea-light: #e6eee8;
+      --gold: #a9854f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, #e5eee6 0, transparent 32rem),
+        var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+      line-height: 1.65;
+    }
+    button, input, textarea { font: inherit; }
+    .shell { max-width: 820px; margin: 0 auto; padding: 32px 18px 80px; }
+    .brand { color: var(--gold); font-size: 13px; letter-spacing: .18em; font-weight: 700; }
+    h1 { margin: 8px 0 10px; font-size: clamp(28px, 6vw, 44px); line-height: 1.2; }
+    .lead { color: var(--muted); margin: 0 0 22px; }
+    .progress { height: 7px; border-radius: 999px; overflow: hidden; background: #e4ded3; }
+    .progress > div { height: 100%; width: 0; background: var(--tea); transition: width .25s; }
+    .meta { display: flex; justify-content: space-between; color: var(--muted); font-size: 13px; margin: 8px 0 20px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: clamp(20px, 5vw, 38px);
+      box-shadow: 0 16px 45px rgba(46, 57, 49, .08);
+    }
+    .stage { color: var(--gold); font-size: 13px; font-weight: 700; }
+    h2 { font-size: clamp(22px, 4vw, 30px); line-height: 1.35; margin: 8px 0; }
+    .why { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+    .options { display: grid; gap: 10px; }
+    .option {
+      cursor: pointer;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 13px;
+      padding: 13px 15px;
+      transition: .18s ease;
+    }
+    .option:hover, .option.selected { border-color: var(--tea); background: var(--tea-light); transform: translateY(-1px); }
+    .option.selected::before { content: "✓ "; color: var(--tea); font-weight: 800; }
+    textarea, input[type="text"], input[type="number"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 13px 15px;
+      color: var(--ink);
+      background: #fff;
+      outline: none;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    textarea:focus, input:focus { border-color: var(--tea); box-shadow: 0 0 0 3px var(--tea-light); }
+    .actions { display: flex; gap: 10px; margin-top: 24px; }
+    .actions button { border: 0; border-radius: 12px; padding: 11px 18px; cursor: pointer; }
+    .primary { background: var(--tea); color: #fff; margin-left: auto; }
+    .secondary { background: #eee8dd; color: var(--ink); }
+    .primary:disabled { opacity: .38; cursor: not-allowed; }
+    .hint { color: #a14d3b; font-size: 13px; min-height: 22px; margin-top: 8px; }
+    .result { white-space: pre-wrap; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px; font-size: 14px; }
+    .result-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+    .result-actions button { border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; background: var(--tea); color: #fff; }
+    .result-actions .secondary { background: #eee8dd; color: var(--ink); }
+    .hidden { display: none; }
+    @media (max-width: 520px) {
+      .shell { padding-top: 20px; }
+      .card { border-radius: 16px; }
+      .actions { position: sticky; bottom: 10px; background: rgba(255,253,248,.92); padding: 8px; border-radius: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="brand">一群 · 茶生意前期调查</div>
+    <h1>先把你的生意说清楚</h1>
+    <p class="lead">这不是一张普通资料表。它会根据你的选择继续追问，帮助我们在正式咨询前，看清你的资源、能力、业务现状和真正卡点。</p>
+    <div id="survey">
+      <div class="progress"><div id="bar"></div></div>
+      <div class="meta"><span id="progressText"></span><span>预计 8-12 分钟</span></div>
+      <section class="card">
+        <div class="stage" id="stage"></div>
+        <h2 id="question"></h2>
+        <div class="why" id="why"></div>
+        <div id="answerArea"></div>
+        <div class="hint" id="hint"></div>
+        <div class="actions">
+          <button class="secondary" id="back">上一题</button>
+          <button class="primary" id="next">继续</button>
+        </div>
+      </section>
+    </div>
+    <section class="card hidden" id="resultCard">
+      <div class="stage">调查完成</div>
+      <h2>你的咨询前置档案</h2>
+      <p class="why">这份内容可以直接作为你与一群第一次沟通时的自我介绍。</p>
+      <div class="result" id="result"></div>
+      <div class="result-actions">
+        <button id="copy">复制结果</button>
+        <button class="secondary" id="download">下载 Markdown</button>
+        <button class="secondary" id="restart">重新填写</button>
+      </div>
+    </section>
+  </main>
+  <script>
+    const q = (id, stage, question, type, options = [], why = "", branches = {}) =>
+      ({ id, stage, question, type, options, why, branches });
+
+    const questions = [
+      q("name", "01 基础认识", "怎么称呼你？", "text", [], "先建立一份属于你的咨询档案。"),
+      q("city", "01 基础认识", "你目前主要在哪个城市或区域做茶？", "text"),
+      q("identity", "01 基础认识", "你现在最接近哪种身份？", "single",
+        ["茶叶品牌主理人", "茶馆或茶空间老板", "茶农 / 茶厂 / 供应链", "茶行业运营者", "茶文化老师 / 培训者", "正在准备进入茶行业", "其他"]),
+      q("years", "01 基础认识", "你做茶多久了？", "single",
+        ["还没正式开始", "1年以内", "1-3年", "3-10年", "10年以上"]),
+      q("business", "02 生意现状", "你目前主要靠什么赚钱？可多选。", "multi",
+        ["零售卖茶", "批发 / 供应链", "茶馆 / 空间消费", "企业礼品 / 大客户", "茶会 / 活动", "培训 / 课程", "内容 / 咨询 / 服务", "目前还没有稳定收入"]),
+      q("product", "02 生意现状", "你现在最想重点做的产品或业务是什么？", "textarea", [], "请写具体一点，例如：安化黑茶零售、企业礼品茶、禅茶袋泡茶、茶馆私域。"),
+      q("stage_now", "02 生意现状", "你现在处于哪个阶段？", "single",
+        ["有想法，还没开始", "产品准备中", "已经开始，但成交不稳定", "已有稳定成交，想放大", "业务成熟，想做品牌或新增长"]),
+      q("revenue", "02 生意现状", "你当前每月茶业务收入大约在哪个区间？", "single",
+        ["暂时没有", "1万元以内", "1-5万元", "5-20万元", "20-100万元", "100万元以上", "不方便透露"]),
+      q("strength", "03 资源能力", "你最擅长什么？可多选。", "multi",
+        ["选茶 / 品鉴", "茶山 / 产地资源", "产品研发 / 供应链", "线下茶会", "茶空间运营", "私域运营", "大客户成交", "零售销售", "内容表达 / 写作", "短视频 / 直播", "审美 / 包装 / 拍摄", "传统文化 / 茶文化讲解", "团队管理", "暂时说不清"]),
+      q("wechat_size", "03 资源能力", "你的微信私域大约有多少有效好友？", "single",
+        ["500人以内", "500-2000人", "2000-5000人", "5000人以上", "有多个微信号", "几乎没有私域"],
+        "已有信任关系，通常是茶老板最快的冷启动资源。"),
+      q("private_group", "03 资源能力", "你的微信群体主要是什么类型？可多选。", "multi",
+        ["老客户", "茶友", "茶行业同行", "企业客户 / 高净值客户", "学员", "本地生活人群", "亲友熟人", "群体很杂", "没有微信群"],
+        "只有选择了私域运营，才会继续追问触达方式。", { showIf: a => (a.strength || []).includes("私域运营") }),
+      q("private_touch", "03 资源能力", "你平时怎么触达和转化私域客户？可多选。", "multi",
+        ["朋友圈持续种草", "微信群分享", "一对一私聊", "线下邀约喝茶", "直播 / 视频号", "活动促销", "老客转介绍", "没有固定动作"],
+        "", { showIf: a => (a.strength || []).includes("私域运营") }),
+      q("chat_entry", "03 资源能力", "你通常用什么切入点开始私聊？可多选。", "multi",
+        ["询问最近喝茶情况", "根据节气 / 身体状态推荐", "新品到货通知", "活动 / 茶会邀请", "客户生日或节日问候", "根据过往购买记录回访", "直接发送产品信息", "不知道怎么开口"],
+        "", { showIf: a => (a.private_touch || []).includes("一对一私聊") }),
+      q("big_customer", "03 资源能力", "你最常成交哪类大客户？", "multi",
+        ["企业礼品采购", "商务接待", "政企单位", "协会 / 商会", "高净值个人", "渠道商 / 茶馆", "暂时没有稳定类型"],
+        "", { showIf: a => (a.strength || []).includes("大客户成交") }),
+      q("big_customer_method", "03 资源能力", "你的大客户通常因为什么愿意跟你成交？可多选。", "multi",
+        ["长期关系与信任", "产品稳定", "定制能力", "价格优势", "交付与服务", "茶文化体验", "资源介绍", "自己也说不清"],
+        "", { showIf: a => (a.strength || []).includes("大客户成交") }),
+      q("tea_event", "03 资源能力", "你的线下茶会通常怎么做？可多选。", "multi",
+        ["主题品鉴会", "新茶发布", "文化雅集", "企业专场", "会员活动", "课程培训", "朋友邀约小聚", "还没有稳定模式"],
+        "", { showIf: a => (a.strength || []).includes("线下茶会") }),
+      q("tea_event_conversion", "03 资源能力", "茶会结束后，你通常怎么承接成交？可多选。", "multi",
+        ["现场直接销售", "添加微信后跟进", "进入社群长期养熟", "引导成为会员", "承接企业定制", "主要做口碑，不主动成交", "没有明确承接"],
+        "", { showIf: a => (a.strength || []).includes("线下茶会") }),
+      q("supply_resource", "03 资源能力", "你的供应链优势具体是什么？可多选。", "multi",
+        ["自有茶山 / 茶园", "自有茶厂", "稳定合作茶农 / 茶厂", "独特产区或工艺", "价格优势", "小批量定制", "产品研发", "仓储老茶", "还没形成清晰优势"],
+        "", { showIf: a => (a.strength || []).includes("茶山 / 产地资源") || (a.strength || []).includes("产品研发 / 供应链") }),
+      q("supply_problem", "03 资源能力", "供应链资源目前最难变现的原因是什么？可多选。", "multi",
+        ["产品太少", "包装跟不上", "不会讲产品价值", "没有稳定客户", "价格不占优势", "缺少拍摄素材", "缺少销售团队", "交付能力有限"],
+        "", { showIf: a => (a.strength || []).includes("茶山 / 产地资源") || (a.strength || []).includes("产品研发 / 供应链") }),
+      q("expression_style", "03 资源能力", "你最自然的表达方式是什么？可多选。", "multi",
+        ["写文章", "发朋友圈", "面对面聊天", "讲课", "口播视频", "直播", "访谈对话", "暂时都不自然"],
+        "", { showIf: a => (a.strength || []).includes("内容表达 / 写作") || (a.strength || []).includes("传统文化 / 茶文化讲解") }),
+      q("video_condition", "03 资源能力", "你做视频或直播的现实条件是什么？可多选。", "multi",
+        ["愿意真人出镜", "只接受拍手 / 产品", "更适合声音 / 播客", "更适合文字或图文", "有固定拍摄伙伴", "有剪辑支持", "可以稳定直播", "不愿意出镜"],
+        "", { showIf: a => (a.strength || []).includes("短视频 / 直播") }),
+      q("visual_problem", "03 资源能力", "你在包装、审美或拍摄上最需要补什么？可多选。", "multi",
+        ["品牌视觉定位", "包装设计", "产品拍摄", "场景搭建", "小红书审美", "礼盒与送礼表达", "暂时不清楚"],
+        "", { showIf: a => (a.strength || []).includes("审美 / 包装 / 拍摄") }),
+      q("content_platform", "04 获客内容", "你目前在哪些渠道持续发内容？可多选。", "multi",
+        ["朋友圈", "公众号", "小红书", "视频号", "抖音", "微信群 / 社群", "线下活动", "几乎不发"]),
+      q("content_type", "04 获客内容", "你现在最常发什么内容？可多选。", "multi",
+        ["产品硬广", "茶知识科普", "茶山 / 产地", "冲泡 / 鉴别", "客户反馈", "个人生活", "经营观点", "活动记录", "传统文化 / 养生", "没有稳定内容"]),
+      q("content_problem", "04 获客内容", "你做内容最难的地方是什么？可多选。", "multi",
+        ["不知道发什么", "不会写", "不会拍", "没有时间", "发了没流量", "有流量没成交", "内容和产品脱节", "不敢表达 / 不愿出镜", "无法持续"]),
+      q("product_count", "05 产品转化", "你目前可以稳定销售的核心 SKU 有多少？", "single",
+        ["还没有产品", "1-3款", "4-10款", "10-30款", "30款以上"]),
+      q("packaging", "05 产品转化", "你怎么看当前产品包装与价格的匹配度？", "single",
+        ["包装明显拖后腿", "能用，但缺少品牌感", "基本匹配", "包装是优势", "还没有包装"]),
+      q("price_objection", "05 产品转化", "客户不成交时，最常见的原因是什么？可多选。", "multi",
+        ["觉得贵", "看不懂差异", "缺少信任", "产品不够丰富", "包装不适合送礼", "没有立即购买理由", "购买流程麻烦", "自己没有持续跟进", "暂时说不清"]),
+      q("sales_path", "05 产品转化", "客户通常通过什么路径完成购买？可多选。", "multi",
+        ["朋友圈看到后私聊", "线下喝茶后成交", "社群转化", "直播 / 短视频成交", "电商店铺下单", "老客转介绍", "大客户主动询价", "路径不稳定"]),
+      q("team", "06 执行条件", "目前谁在负责这门生意？", "single",
+        ["基本只有我一个人", "我为主，有家人协助", "2-5人小团队", "有成熟分工团队", "多个合作方共同推进"]),
+      q("time", "06 执行条件", "你每天能稳定投入多少时间？", "single",
+        ["1小时以内", "1-3小时", "3-6小时", "可以全职投入", "时间很不稳定"]),
+      q("ai", "06 执行条件", "你目前怎么使用 AI？可多选。", "multi",
+        ["写朋友圈 / 文案", "整理录音 / 会议", "做选题和脚本", "分析产品与客户", "搭知识库", "做图片 / 视频", "偶尔使用", "基本没用过"]),
+      q("goal", "07 目标困扰", "未来 3 个月，你最想拿到什么结果？可多选。", "multi",
+        ["找到清晰定位", "稳定输出内容", "增加精准客户", "提高成交率", "激活老客户", "推出新产品", "提升包装与品牌感", "建立个人 IP", "跑通 AI 工作流", "搭建团队或渠道"]),
+      q("problem", "07 目标困扰", "你现在最大的困扰是什么？", "textarea", [], "请尽量写真实情况。我们会优先从根问题入手，而不是只处理表面动作。"),
+      q("failed", "07 目标困扰", "为了改善这个问题，你已经尝试过什么？结果怎样？", "textarea"),
+      q("support", "07 目标困扰", "你希望一群重点帮你解决什么？可多选。", "multi",
+        ["战略定位", "产品与选品", "包装与品牌表达", "内容定位与选题", "私域与成交", "个人 IP", "AI 工作流 / 知识库", "运营节奏与执行计划", "暂时说不清，需要先诊断"]),
+      q("extra", "07 目标困扰", "还有什么是你觉得我必须提前知道的？", "textarea")
+    ];
+
+    const labels = Object.fromEntries(questions.map(x => [x.id, x.question]));
+    let answers = JSON.parse(localStorage.getItem("yiqunSurveyAnswers") || "{}");
+    let path = [];
+    let index = 0;
+
+    const el = id => document.getElementById(id);
+    const visibleQuestions = () => questions.filter(item => !item.branches.showIf || item.branches.showIf(answers));
+
+    function render() {
+      const list = visibleQuestions();
+      if (index >= list.length) return finish();
+      const item = list[index];
+      path = list.map(x => x.id);
+      el("stage").textContent = item.stage;
+      el("question").textContent = item.question;
+      el("why").textContent = item.why || "根据你的真实情况选择即可，没有标准答案。";
+      el("hint").textContent = "";
+      el("back").disabled = index === 0;
+      el("next").textContent = index === list.length - 1 ? "生成前置档案" : "继续";
+      el("progressText").textContent = `第 ${index + 1} 题 / 当前共 ${list.length} 题`;
+      el("bar").style.width = `${((index + 1) / list.length) * 100}%`;
+      renderAnswer(item);
+    }
+
+    function renderAnswer(item) {
+      const area = el("answerArea");
+      area.innerHTML = "";
+      if (item.type === "text" || item.type === "number") {
+        const input = document.createElement("input");
+        input.type = item.type;
+        input.value = answers[item.id] || "";
+        input.placeholder = "请输入";
+        input.oninput = e => save(item.id, e.target.value);
+        area.appendChild(input);
+      } else if (item.type === "textarea") {
+        const input = document.createElement("textarea");
+        input.value = answers[item.id] || "";
+        input.placeholder = "请输入你的真实情况";
+        input.oninput = e => save(item.id, e.target.value);
+        area.appendChild(input);
+      } else {
+        const box = document.createElement("div");
+        box.className = "options";
+        item.options.forEach(option => {
+          const button = document.createElement("button");
+          button.className = "option";
+          button.textContent = option;
+          const selected = item.type === "multi"
+            ? (answers[item.id] || []).includes(option)
+            : answers[item.id] === option;
+          if (selected) button.classList.add("selected");
+          button.onclick = () => {
+            if (item.type === "multi") {
+              const values = new Set(answers[item.id] || []);
+              values.has(option) ? values.delete(option) : values.add(option);
+              save(item.id, [...values]);
+            } else {
+              save(item.id, option);
+            }
+            renderAnswer(item);
+          };
+          box.appendChild(button);
+        });
+        area.appendChild(box);
+      }
+    }
+
+    function save(id, value) {
+      answers[id] = value;
+      localStorage.setItem("yiqunSurveyAnswers", JSON.stringify(answers));
+    }
+
+    function isAnswered(item) {
+      const value = answers[item.id];
+      if (item.id === "extra") return true;
+      return Array.isArray(value) ? value.length > 0 : String(value || "").trim().length > 0;
+    }
+
+    el("next").onclick = () => {
+      const list = visibleQuestions();
+      if (!isAnswered(list[index])) {
+        el("hint").textContent = "请先完成这一题，再继续。";
+        return;
+      }
+      index++;
+      render();
+    };
+    el("back").onclick = () => { if (index > 0) { index--; render(); } };
+
+    const format = value => Array.isArray(value) ? value.join("、") : value;
+    function finish() {
+      const name = answers.name || "未填写姓名";
+      const strengths = format(answers.strength || []);
+      const goals = format(answers.goal || []);
+      const contentProblems = format(answers.content_problem || []);
+      const support = format(answers.support || []);
+      const detailLines = visibleQuestions()
+        .filter(item => answers[item.id] && item.id !== "name")
+        .map(item => `- ${labels[item.id]}：${format(answers[item.id])}`)
+        .join("\n");
+      const result = `# ${name}的咨询前置档案
+
+## 一句话自我介绍
+我是${answers.city || "未填写地区"}的${answers.identity || "茶行业从业者"}，做茶${answers.years || "时间未填写"}。目前主要做${format(answers.business || []) || "业务未填写"}，最想重点推进的是：${answers.product || "未填写"}。
+
+## 我的核心优势
+${strengths || "暂未梳理清楚"}
+
+## 当前业务阶段
+${answers.stage_now || "未填写"}；核心产品约${answers.product_count || "未填写"}；每天可投入${answers.time || "未填写"}。
+
+## 当前获客与转化
+内容渠道：${format(answers.content_platform || []) || "未填写"}
+成交路径：${format(answers.sales_path || []) || "未填写"}
+内容卡点：${contentProblems || "未填写"}
+
+## 未来三个月目标
+${goals || "未填写"}
+
+## 当前最大困扰
+${answers.problem || "未填写"}
+
+## 已经尝试过
+${answers.failed || "未填写"}
+
+## 希望一群重点支持
+${support || "未填写"}
+
+## 完整调查记录
+${detailLines}
+
+📌 来源：一群式茶老板前期调查工具
+🎯 应用：首次咨询前自我介绍、客户诊断、陪跑建档`;
+      el("result").textContent = result;
+      el("survey").classList.add("hidden");
+      el("resultCard").classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    el("copy").onclick = async () => {
+      await navigator.clipboard.writeText(el("result").textContent);
+      el("copy").textContent = "已复制";
+      setTimeout(() => el("copy").textContent = "复制结果", 1500);
+    };
+    el("download").onclick = () => {
+      const blob = new Blob([el("result").textContent], { type: "text/markdown;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `${answers.name || "客户"}-咨询前置档案.md`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    };
+    el("restart").onclick = () => {
+      answers = {};
+      localStorage.removeItem("yiqunSurveyAnswers");
+      index = 0;
+      el("resultCard").classList.add("hidden");
+      el("survey").classList.remove("hidden");
+      render();
+    };
+    render();
+  </script>
+</body>
+</html>
